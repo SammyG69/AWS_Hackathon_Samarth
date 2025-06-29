@@ -1,7 +1,6 @@
 {
   "name": "amazon-chime-sdk-js-demo",
   "version": "2.0.0",
-  "type": "module",
   "description": "Amazon Chime SDK JavaScript Demo",
   "scripts": {
     "deps": "cd ../.. && npm run build",
