@@ -24,7 +24,7 @@
   <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
   <div class="container">
     <form id="form-authenticate">
-      <h1 class="h3 mb-3 fw-normal">Join a meeting</h1>
+      <h1 class="h3 mb-3 fw-normal">Join a Meeting</h1>
       <div class="form-floating row mt-3">
         <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required autofocus>
         <label for="inputMeeting" style="text-align: left;">Meeting Title or ID</label>
@@ -32,6 +32,14 @@
       <div class="form-floating row mt-3">
         <input type="name" id="inputName" class="form-control" placeholder="Your Name" required>
         <label for="inputName" style="text-align: left;">Your Name</label>
+      </div>
+      <div class="form-floating row mt-3" title="Select meeting format. Helps to generate relevant real-time suggestions">
+        <select id="selectPurpose" class="form-select" style = "width:100%">
+          <option value="casual">Casual</option>
+          <option value="proffesional">Professional/work</option>
+          <option value="sales-client"><b>Customer-Client Engagement*</b></option>
+        </select>
+        <label for="selectPurpose" style="text-align: left;">Meeting Format</label>
       </div>
       <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
         <select id="inputRegion" class="form-select" style="width:100%">
