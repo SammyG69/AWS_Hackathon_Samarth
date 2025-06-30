@@ -1103,16 +1103,58 @@
     </div>
   </div>
 </div>
+<!-- Draggable Chatbot Button -->
+<div id="chatbot-toggle" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: grab;
+  z-index: 10000;
+">
+  💬
+</div>
 
-<body>
-  <div id="video-container"></div>
-
-  <!-- Add this for your chatbot -->
-  <div id="chatbot-panel" style="position: fixed; right: 0; top: 0; width: 300px; height: 100%; background: white; overflow-y: auto; border-left: 1px solid #ccc; padding: 10px;">
-    <h3>Meeting Assistant 🤖</h3>
-    <div id="chat-messages"></div>
+<!-- Hidden Chat Window -->
+<div id="chatbot-panel" style="
+  display: none;
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 300px;
+  height: 400px;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', sans-serif;
+  z-index: 9999;
+">
+  <div style="padding: 10px; border-bottom: 1px solid #ddd;">
+    <strong>Meeting Assistant 🤖</strong>
   </div>
-</body>
+  <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 14px;"></div>
+  <div style="padding: 10px; border-top: 1px solid #ddd;">
+    <input id="chatbot-input" type="text" placeholder="Type a message..." style="
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    ">
+  </div>
+</div>
+
 
 </body>
 </html>
