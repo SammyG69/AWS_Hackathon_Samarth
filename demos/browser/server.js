@@ -476,6 +476,10 @@ function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   // enable shared array buffer for videoFxProcessor
   response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  response.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; connect-src 'self' http://localhost:3001 https://* ws://* wss://*; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+  );
   response.end(body);
   if (contentType === 'application/json' && !skipLogging) {
     log(body);
