@@ -2231,6 +2231,7 @@ export class DemoMeetingApp
       this.audioVideo.realtimeMuteLocalAudio();
     }
     this.audioVideo.start();
+    setupChatbotUI();
   }
 
   async leave(): Promise<void> {
@@ -2648,6 +2649,44 @@ export class DemoMeetingApp
   };
 
   setupLiveTranscription = () => {
+    let transcriptBuffer = '';
+    let lastFlush = Date.now();
+    this.transcriptEventHandler = (event: any) => {
+      console.log('[Transcript Result]', event.results);
+
+      for (const result of event.results) {
+        if (result.isPartial) continue;
+
+        for (const alt of result.alternatives) {
+          transcriptBuffer += ` ${alt.transcript}`;
+        }
+      }
+
+      const now = Date.now();
+      if (now - lastFlush > 30000 && transcriptBuffer.trim().length > 0) {
+        fetch('http://localhost:3001/transcript', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transcript: transcriptBuffer }),
+        })
+          .then(res => res.text())
+          .then(response => {
+            console.log('LLM Response:', response);
+            const chatContainer = document.getElementById('chat-messages');
+            if (chatContainer) {
+              const newMessage = document.createElement('div');
+              newMessage.innerText = response;
+              newMessage.className = 'llm-response';
+              chatContainer.appendChild(newMessage);
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+          })
+          .catch(err => console.error('Failed to send transcript:', err));
+
+        transcriptBuffer = '';
+        lastFlush = now;
+      }
+    };
     this.audioVideo.transcriptionController?.subscribeToTranscriptEvent(
       this.transcriptEventHandler
     );
