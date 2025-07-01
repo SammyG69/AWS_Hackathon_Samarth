@@ -27,7 +27,7 @@ app.post('/sentiment', async (req, res) => {
   res.json(result);
 });
 
-app.post('/encouragment', async (req, res) => {
+app.post('/encouragement', async (req, res) => {
   const { transcript } = req.body;
   const result = await comforter(transcript);
   res.json(result);

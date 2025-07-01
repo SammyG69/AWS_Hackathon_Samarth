@@ -2716,14 +2716,15 @@ export class DemoMeetingApp
             console.log('Sentiment response:', data);
             const sentiment = data.sentiment || 'neutral';
 
-            if (sentiment in negativeEmotions) {
+            if (negativeEmotions.includes(sentiment)) {
               negativeStreak += 1;
             } else {
               negativeStreak = 0; // reset streak
             }
+            console.log(`Negative streak count: ${negativeStreak}`);
 
             if (negativeStreak >= 2) {
-              fetch('http://localhost:3001/encourage')
+              fetch('http://localhost:3001/encouragement')
                 .then(res => res.text())
                 .then(tip => {
                   console.log('Encouragement:', tip);

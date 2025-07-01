@@ -15,8 +15,10 @@ Include DETAILED, SPECIFIC, RELEVANT, NON-GENERIC related suggestions based on t
 not generalized ones. 
 Provide examples where applicable, mention valid PROPER NOUNS (e.g apps, locations, games) and avoid vague sentences and generalistic advice. Provide
 advice that is relatable and beneficial to the situation in hand.
-Keep it CONCISE AND LIMITED TO 150 words MAX. ONLY RETURN SUGGESTIONS, NOT A SUMMARY, OR HIGHLIGHTS ABOUT THE SITUATION, OR ANYTHING IRRELEVANT.
+Keep it CONCISE AND LIMITED TO 70 words MAX. ONLY RETURN SUGGESTIONS, NOT A SUMMARY, OR HIGHLIGHTS ABOUT THE SITUATION, OR ANYTHING IRRELEVANT.
 WHERE necessary, provide links to resources (e.g articles, websites, papers etcc)
+
+Be CLEAR, DIRECT and CONCISE
 
 Transcript:
 ${transcript}
