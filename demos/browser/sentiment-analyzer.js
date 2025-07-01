@@ -13,7 +13,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Prepared prompt with a placeholder for the transcript
 const basePrompt = transcript => `
-Classify the sentiment of the given transcript, into only ONE of the following emotions. NEUTRAL, HAPPY, CONFIDENT, FUNNY, CHEERY, CONSIDERATE,
+Classify the sentiment of the given transcript, into only ONE of the following emotions: NEUTRAL, HAPPY, CONFIDENT, FUNNY, CHEERY, CONSIDERATE,
 SAD, ANGRY, BERATED, CRAZY, CONFUSION, STRESSED, SCARED, HESITANT, DISGUSTED.
 
 Do not return anything else but one word from the given list of emotions in CAPITAL LETTERS

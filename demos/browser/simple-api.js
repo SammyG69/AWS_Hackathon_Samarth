@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { main } = require('./groq.js');
 const { sentianalyzer } = require('./sentiment-analyzer.js');
+const { comforter } = require('./comforter.js');
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,12 @@ app.post('/transcript', async (req, res) => {
 app.post('/sentiment', async (req, res) => {
   const { transcript } = req.body;
   const result = await sentianalyzer(transcript); // should return { sentiment: 'positive' | 'negative' | 'neutral' }
+  res.json(result);
+});
+
+app.post('/encouragment', async (req, res) => {
+  const { transcript } = req.body;
+  const result = await comforter(transcript);
   res.json(result);
 });
 
