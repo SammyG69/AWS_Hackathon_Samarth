@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Prepared prompt with a placeholder for the transcript
 const basePrompt = transcript => `
-Imagine yourself as a third party to this conversation. Identify the overarching problem or goal first AND DO NOT SAY ANYTHING ONCE YOU IDENTIFY.
+Imagine yourself as a third party to this conversation. Identify the overarching problem or goal first AND DO NOT SAY ANYTHING ONCE YOU IDENTIFY AND DONT STATE THE OVERARCHING PROBLEM OR ANYTHING SYNONYMOUS
 After identifying the goal or problem, highlight key concerns individuals are having. DO NOT SAY OR PRINT THIS
 
 Make sure to contextualise the discussion. DO NOT PRINT THIS. 
@@ -15,7 +15,7 @@ Include DETAILED, SPECIFIC, RELEVANT, NON-GENERIC related suggestions based on t
 not generalized ones. 
 Provide examples where applicable, mention valid PROPER NOUNS (e.g apps, locations, games) and avoid vague sentences and generalistic advice. Provide
 advice that is relatable and beneficial to the situation in hand.
-Keep it CONCISE AND LIMITED TO 70 words MAX. ONLY RETURN SUGGESTIONS, NOT A SUMMARY, OR HIGHLIGHTS ABOUT THE SITUATION, OR ANYTHING IRRELEVANT.
+Keep it CONCISE AND LIMITED TO 50 words MAX. ONLY RETURN SUGGESTIONS, NOT A SUMMARY, OR HIGHLIGHTS ABOUT THE SITUATION, OR ANYTHING IRRELEVANT.
 WHERE necessary, provide links to resources (e.g articles, websites, papers etcc)
 
 Be CLEAR, DIRECT and CONCISE

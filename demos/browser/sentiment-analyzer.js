@@ -1,14 +1,6 @@
 import 'dotenv/config';
 import Groq from 'groq-sdk';
 
-const negativeEmotions = new Array[
-  ('SAD', 'ANGRY', 'BERATED', 'CRAZY', 'CONFUSION', 'STRESSED', 'SCARED', 'HESITANT', 'DISGUSTED')
-]();
-
-const positiveEmotions = new Array[
-  ('NEUTRAL', 'HAPPY, CONFIDENT', 'FUNNY', 'CHEERY', 'CONSIDERATE')
-]();
-
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Prepared prompt with a placeholder for the transcript

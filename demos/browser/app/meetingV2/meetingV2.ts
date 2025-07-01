@@ -101,6 +101,7 @@ import {
 } from './util/mediastreamprovider/DemoMediaStreamProviders';
 
 import { BackgroundImageEncoding } from './util/BackgroundImage';
+import { stringify } from 'uuid';
 
 MeetingToast; // Make sure this file is included in webpack
 
@@ -2713,15 +2714,14 @@ export class DemoMeetingApp
         })
           .then(res => res.json())
           .then(data => {
-            console.log('Sentiment response:', data);
             const sentiment = data.sentiment || 'neutral';
+            console.log('Sentiment response:', stringify(sentiment));
 
             if (negativeEmotions.includes(sentiment)) {
               negativeStreak += 1;
             } else {
               negativeStreak = 0; // reset streak
             }
-            console.log(`Negative streak count: ${negativeStreak}`);
 
             if (negativeStreak >= 2) {
               fetch('http://localhost:3001/encouragement')
