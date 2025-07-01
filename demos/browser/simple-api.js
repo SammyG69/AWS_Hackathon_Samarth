@@ -22,6 +22,7 @@ app.post('/transcript', async (req, res) => {
 });
 
 app.post('/sentiment', async (req, res) => {
+  console.log('This Sentiment API is being called');
   const { transcript } = req.body;
   const result = await sentianalyzer(transcript); // should return { sentiment: 'positive' | 'negative' | 'neutral' }
   res.json(result);

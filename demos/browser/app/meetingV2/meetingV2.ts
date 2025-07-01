@@ -101,7 +101,6 @@ import {
 } from './util/mediastreamprovider/DemoMediaStreamProviders';
 
 import { BackgroundImageEncoding } from './util/BackgroundImage';
-import { stringify } from 'uuid';
 
 MeetingToast; // Make sure this file is included in webpack
 
@@ -2706,7 +2705,8 @@ export class DemoMeetingApp
         transcriptBuffer = '';
         lastFlush = now;
       }
-      if (now - sentimentLastFlush > 5000 && sentimentBuffer.trim()) {
+      if (now - sentimentLastFlush > 5000 && sentimentBuffer.trim().length > 0) {
+        console.log('YIPPPEEEE: SCOOOBY DOO WHERE ARE YOU');
         fetch('http://localhost:3001/sentiment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -2714,10 +2714,15 @@ export class DemoMeetingApp
         })
           .then(res => res.json())
           .then(data => {
-            const sentiment = data.sentiment || 'neutral';
-            console.log('Sentiment response:', stringify(sentiment));
+            const sentimentRaw = data.sentiment || 'neutral';
+            const sentiment = sentimentRaw.trim().toUpperCase();
 
-            if (negativeEmotions.includes(sentiment)) {
+            console.log('Raw sentiment:', sentimentRaw);
+            console.log('Normalised:', sentiment);
+            console.log('Negative match?', negativeEmotions.includes(sentiment));
+
+            const normalisedSentiment = sentiment.trim().toUpperCase();
+            if (negativeEmotions.includes(normalisedSentiment)) {
               negativeStreak += 1;
             } else {
               negativeStreak = 0; // reset streak
