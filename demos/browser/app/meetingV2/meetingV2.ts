@@ -2652,8 +2652,6 @@ export class DemoMeetingApp
     let transcriptBuffer = '';
     let lastFlush = Date.now();
     this.transcriptEventHandler = (event: any) => {
-      console.log('[Transcript Raw Event]', event);
-
       if (!event || !event.results || !Array.isArray(event.results)) {
         console.warn('❗ Transcript event missing expected "results" array:', event);
         return;

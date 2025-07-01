@@ -5,12 +5,18 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Prepared prompt with a placeholder for the transcript
 const basePrompt = transcript => `
-Imagine yourself as a third party to this casual conversation. Identify the overarching problem or goal first AND DO NOT SAY ANYTHING ONCE YOU IDENTIFY.
+Imagine yourself as a third party to this conversation. Identify the overarching problem or goal first AND DO NOT SAY ANYTHING ONCE YOU IDENTIFY.
 After identifying the goal or problem, highlight key concerns individuals are having. DO NOT SAY OR PRINT THIS
-Make sure to contextualise the discussion. DO NOT PRINT THIS. Provide DETAILED, SPECIFIC, RELEVANT, NON-GENERIC, sugggestions on what can be done better by all the parties or
-some ideas they may have missed that could make achievement of their goal much more better. Include DETAILED, SPECIFIC, RELEVANT, NON-GENERIC related suggestions based on the context and
-not generalized ones. Provide examples where applicable, mention valid PROPER NOUNS (e.g apps, locations, games) and avoid vague sentences and generalistic advice. Provide
-advice that is relatable and beneficial to the situation in hand. Keep it CONCISE AND LIMITED TO 150 words MAX
+
+Make sure to contextualise the discussion. DO NOT PRINT THIS. 
+Provide DETAILED, SPECIFIC, RELEVANT, NON-GENERIC, sugggestions on what can be done better by all the parties or
+some ideas they may have missed that could make achievement of their goal much more better. 
+Include DETAILED, SPECIFIC, RELEVANT, NON-GENERIC related suggestions based on the context and
+not generalized ones. 
+Provide examples where applicable, mention valid PROPER NOUNS (e.g apps, locations, games) and avoid vague sentences and generalistic advice. Provide
+advice that is relatable and beneficial to the situation in hand.
+Keep it CONCISE AND LIMITED TO 150 words MAX. ONLY RETURN SUGGESTIONS, NOT A SUMMARY, OR HIGHLIGHTS ABOUT THE SITUATION, OR ANYTHING IRRELEVANT.
+WHERE necessary, provide links to resources (e.g articles, websites, papers etcc)
 
 Transcript:
 ${transcript}
