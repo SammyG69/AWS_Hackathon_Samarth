@@ -1,9 +1,10 @@
 const express = require('express');
-const cors = require('cors'); // <== ADD THIS LINE
+const cors = require('cors');
 const { main } = require('./groq.js');
+const { sentianalyzer } = require('./sentiment-analyzer.js');
 
 const app = express();
-app.use(cors()); // <== ADD THIS LINE
+app.use(cors());
 app.use(express.json());
 
 app.post('/transcript', async (req, res) => {
@@ -17,6 +18,12 @@ app.post('/transcript', async (req, res) => {
     console.error(e);
     res.status(500).send('Error generating suggestions');
   }
+});
+
+app.post('/sentiment', async (req, res) => {
+  const { transcript } = req.body;
+  const result = await sentianalyzer(transcript); // should return { sentiment: 'positive' | 'negative' | 'neutral' }
+  res.json(result);
 });
 
 app.listen(3001, () => console.log('Listening on http://localhost:3001'));

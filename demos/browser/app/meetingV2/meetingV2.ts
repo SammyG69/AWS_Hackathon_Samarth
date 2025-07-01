@@ -2651,6 +2651,21 @@ export class DemoMeetingApp
   setupLiveTranscription = () => {
     let transcriptBuffer = '';
     let lastFlush = Date.now();
+    let sentimentBuffer: string = '';
+    let sentimentLastFlush = Date.now();
+    let negativeStreak = 0;
+    let negativeEmotions = [
+      'SAD',
+      'ANGRY',
+      'BERATED',
+      'CRAZY',
+      'CONFUSION',
+      'STRESSED',
+      'SCARED',
+      'HESITANT',
+      'DISGUSTED',
+    ];
+
     this.transcriptEventHandler = (event: any) => {
       if (!event || !event.results || !Array.isArray(event.results)) {
         console.warn('❗ Transcript event missing expected "results" array:', event);
@@ -2662,6 +2677,7 @@ export class DemoMeetingApp
 
         for (const alt of result.alternatives) {
           transcriptBuffer += ` ${alt.transcript}`;
+          sentimentBuffer += ` ${alt.transcript}`;
         }
       }
 
@@ -2689,7 +2705,49 @@ export class DemoMeetingApp
         transcriptBuffer = '';
         lastFlush = now;
       }
+      if (now - sentimentLastFlush > 5000 && sentimentBuffer.trim()) {
+        fetch('http://localhost:3001/sentiment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transcript: sentimentBuffer }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            console.log('Sentiment response:', data);
+            const sentiment = data.sentiment || 'neutral';
+
+            if (sentiment in negativeEmotions) {
+              negativeStreak += 1;
+            } else {
+              negativeStreak = 0; // reset streak
+            }
+
+            if (negativeStreak >= 2) {
+              fetch('http://localhost:3001/encourage')
+                .then(res => res.text())
+                .then(tip => {
+                  console.log('Encouragement:', tip);
+                  const chatContainer = document.getElementById('chat-messages');
+                  if (chatContainer) {
+                    const encouragement = document.createElement('div');
+                    encouragement.innerText = tip;
+                    encouragement.className = 'encouragement';
+                    chatContainer.appendChild(encouragement);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                  }
+                })
+                .catch(console.error);
+
+              negativeStreak = 0;
+            }
+          })
+          .catch(console.error);
+
+        sentimentBuffer = '';
+        sentimentLastFlush = now;
+      }
     };
+
     this.audioVideo.transcriptionController?.subscribeToTranscriptEvent(
       this.transcriptEventHandler
     );
