@@ -487,3 +487,5 @@ function respond(response, statusCode, contentType, body, skipLogging = false) {
 }
 
 module.exports = { serve };
+
+serve('127.0.0.1:8080');

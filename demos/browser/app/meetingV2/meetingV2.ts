@@ -2652,7 +2652,12 @@ export class DemoMeetingApp
     let transcriptBuffer = '';
     let lastFlush = Date.now();
     this.transcriptEventHandler = (event: any) => {
-      console.log('[Transcript Result]', event.results);
+      console.log('[Transcript Raw Event]', event);
+
+      if (!event || !event.results || !Array.isArray(event.results)) {
+        console.warn('❗ Transcript event missing expected "results" array:', event);
+        return;
+      }
 
       for (const result of event.results) {
         if (result.isPartial) continue;

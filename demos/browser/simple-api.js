@@ -1,8 +1,9 @@
-// simple-api.js
 const express = require('express');
-const { main } = require('./groq.js'); // Update to './groq-endpoint.js' if needed
+const cors = require('cors'); // <== ADD THIS LINE
+const { main } = require('./groq.js');
 
 const app = express();
+app.use(cors()); // <== ADD THIS LINE
 app.use(express.json());
 
 app.post('/transcript', async (req, res) => {
