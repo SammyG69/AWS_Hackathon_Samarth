@@ -1127,9 +1127,9 @@
 <div id="chatbot-panel" style="
   display: none;
   position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 300px;
+  bottom: 120px;
+  left: 20px;
+  width: 500px;
   height: 400px;
   background: #fff;
   border: 1px solid #ccc;
@@ -1140,9 +1140,10 @@
   font-family: 'Segoe UI', sans-serif;
   z-index: 9999;
 ">
-  <div style="padding: 10px; border-bottom: 1px solid #ddd;">
-    <strong>Meeting Assistant 🤖</strong>
-  </div>
+  <div style="padding: 10px; border-bottom: 1px solid #ddd; background: linear-gradient(to right, #001f3f, #7FDBFF);">
+  <strong style="color: #fff;">Meeting Assistant 🤖</strong>
+</div>
+
   <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 14px;"></div>
   <div style="padding: 10px; border-top: 1px solid #ddd;">
     <input id="chatbot-input" type="text" placeholder="Type a message..." style="
