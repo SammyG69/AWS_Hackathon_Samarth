@@ -2664,6 +2664,8 @@ export class DemoMeetingApp
       'SCARED',
       'HESITANT',
       'DISGUSTED',
+      'FRUSTRATED',
+      'ANNOYED',
     ];
 
     this.transcriptEventHandler = (event: any) => {
@@ -2705,27 +2707,32 @@ export class DemoMeetingApp
         transcriptBuffer = '';
         lastFlush = now;
       }
-      if (now - sentimentLastFlush > 5000 && sentimentBuffer.trim().length > 0) {
-        console.log('YIPPPEEEE: SCOOOBY DOO WHERE ARE YOU');
+      if (now - sentimentLastFlush > 7000 && sentimentBuffer.trim().length > 0) {
+        console.log(`[Sentiment Buffer]: ${sentimentBuffer}`);
         fetch('http://localhost:3001/sentiment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ transcript: sentimentBuffer }),
         })
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error ${res.status}`);
+            }
+            return res.json();
+          })
           .then(data => {
             const sentimentRaw = data.sentiment || 'neutral';
             const sentiment = sentimentRaw.trim().toUpperCase();
 
             console.log('Raw sentiment:', sentimentRaw);
             console.log('Normalised:', sentiment);
-            console.log('Negative match?', negativeEmotions.includes(sentiment));
+            console.log('Negative match? SKibidi', negativeEmotions.includes(sentiment));
 
-            const normalisedSentiment = sentiment.trim().toUpperCase();
-            if (negativeEmotions.includes(normalisedSentiment)) {
+            if (sentiment === 'NEGATIVE') {
               negativeStreak += 1;
+              console.log(`🔴 Negative streak: ${negativeStreak}`);
             } else {
-              negativeStreak = 0; // reset streak
+              negativeStreak = 0;
             }
 
             if (negativeStreak >= 2) {
@@ -2747,7 +2754,9 @@ export class DemoMeetingApp
               negativeStreak = 0;
             }
           })
-          .catch(console.error);
+          .catch(err => {
+            console.error('Sentiment API failed:', err);
+          });
 
         sentimentBuffer = '';
         sentimentLastFlush = now;

@@ -8,6 +8,7 @@
     "build:fast": "npm run copy-assets && node script/webpack-wrapper.js",
     "build": "npm run deps && npm install && tsc && npm run build:fast",
     "start:fast": "npm run copy-assets && npx webpack serve",
+    "start:all": "concurrently \"python sentiment_server.py\" \"node simple-api.js\" \"npm run start:fast\"",
     "start:hot": "npm run copy-assets && webpack serve --config ./webpack.config.hot.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
@@ -15,6 +16,7 @@
     "@types/bootstrap": "^5.1.6",
     "@types/dom-mediacapture-record": "^1.0.11",
     "autoprefixer": "^10.2.6",
+    "concurrently": "^9.2.0",
     "cross-spawn": "^7.0.6",
     "csp-html-webpack-plugin": "^5.1.0",
     "css-loader": "^6.2.0",
@@ -48,6 +50,7 @@
     "lodash": "^4.17.20",
     "markdown-it": "^13.0.1",
     "ngrok": "^4.3.3",
+    "node-fetch": "^3.3.2",
     "popper.js": "^1.15.0",
     "util": "^0.12.4"
   },
