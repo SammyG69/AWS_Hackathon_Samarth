@@ -7,7 +7,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const basePrompt = transcript => `
 The negative emotion is given to you. Based on the negative emotion, provide words of solace
 that will be appropriate for the situation and offer encouragement if the transcript is very negative.
-Keep it UNDER 25 WORDS at maximum and aim for 20-30, unless the situation demands it.
+Keep it UNDER 40 WORDS at maximum and aim for 20-30, unless the situation demands it.
 
 MAKE THE COMFORT WORDS RELEVANT TO THE SITUATION WHERE POSSIBLE.
 ${transcript}

@@ -2707,7 +2707,7 @@ export class DemoMeetingApp
         transcriptBuffer = '';
         lastFlush = now;
       }
-      if (now - sentimentLastFlush > 6000 && sentimentBuffer.trim().length > 0) {
+      if (now - sentimentLastFlush > 7000 && sentimentBuffer.trim().length > 0) {
         console.log(`[Sentiment Buffer]: ${sentimentBuffer}`);
         fetch('http://localhost:3001/sentiment', {
           method: 'POST',
@@ -2736,13 +2736,7 @@ export class DemoMeetingApp
             }
 
             if (negativeStreak >= 2) {
-              // clone before reset
-              console.log('Sending to /encouragement:', sentimentBuffer);
-              fetch('http://localhost:3001/encouragement', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ transcript: sentimentBuffer }),
-              })
+              fetch('http://localhost:3001/encouragement')
                 .then(res => res.text())
                 .then(tip => {
                   console.log('Encouragement:', tip);
@@ -2755,20 +2749,17 @@ export class DemoMeetingApp
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                   }
                 })
-                .catch(console.error)
-                .finally(() => {
-                  negativeStreak = 0;
-                  sentimentBuffer = '';
-                  sentimentLastFlush = now;
-                });
-            } else {
-              sentimentBuffer = '';
-              sentimentLastFlush = now;
+                .catch(console.error);
+
+              negativeStreak = 0;
             }
           })
           .catch(err => {
             console.error('Sentiment API failed:', err);
           });
+
+        sentimentBuffer = '';
+        sentimentLastFlush = now;
       }
     };
 
