@@ -7,7 +7,6 @@ const { comforter } = require('./comforter.js');
 const app = express();
 app.use(cors());
 app.use(express.json());
-const fetch = require('node-fetch');
 
 app.post('/transcript', async (req, res) => {
   const { transcript } = req.body;
@@ -29,7 +28,7 @@ app.post('/sentiment', async (req, res) => {
       return res.status(400).json({ error: 'Transcript is required' });
     }
 
-    const result = await fetch('http://localhost:5005/analyze', {
+    const result = await fetch('http://127.0.0.1:5005/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ transcript }),

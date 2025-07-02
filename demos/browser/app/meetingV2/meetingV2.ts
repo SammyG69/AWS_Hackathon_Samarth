@@ -2736,7 +2736,11 @@ export class DemoMeetingApp
             }
 
             if (negativeStreak >= 2) {
-              fetch('http://localhost:3001/encouragement')
+              fetch('http://localhost:3001/encouragement', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ transcript: sentimentBuffer }), // make sure this has data!
+              })
                 .then(res => res.text())
                 .then(tip => {
                   console.log('Encouragement:', tip);
@@ -2749,17 +2753,20 @@ export class DemoMeetingApp
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                   }
                 })
-                .catch(console.error);
-
-              negativeStreak = 0;
+                .catch(console.error)
+                .finally(() => {
+                  negativeStreak = 0;
+                  sentimentBuffer = '';
+                  sentimentLastFlush = now;
+                });
+            } else {
+              sentimentBuffer = '';
+              sentimentLastFlush = now;
             }
           })
           .catch(err => {
             console.error('Sentiment API failed:', err);
           });
-
-        sentimentBuffer = '';
-        sentimentLastFlush = now;
       }
     };
 
