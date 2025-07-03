@@ -6,7 +6,7 @@
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
   <title>Meeting Demo</title>
 </head>
-<body>
+<body style ="background: linear-gradient(to right, #202641, #161930);">
 
 <div id="flow-fatal" class="flow">
   <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
@@ -24,7 +24,9 @@
   <div class="text-muted" style="position:fixed;right:3px;bottom:3px" id="sdk-version"></div>
   <div class="container">
     <form id="form-authenticate">
-      <h1 class="h3 mb-3 fw-normal">Join a Meeting</h1>
+      <div class="text-center my-3">
+        <img src="Conversa-Logo.png" alt="Logo" style="max-height: 80px;">
+      </div>
       <div class="form-floating row mt-3">
         <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required autofocus>
         <label for="inputMeeting" style="text-align: left;">Meeting Title or ID</label>
@@ -1126,7 +1128,7 @@
 <!-- Hidden Chat Window -->
 <div id="chatbot-panel" style="
   display: none;
-  position: fixed;
+  position: absolute;
   bottom: 120px;
   left: 20px;
   width: 500px;
@@ -1140,7 +1142,7 @@
   font-family: 'Segoe UI', sans-serif;
   z-index: 9999;
 ">
-  <div style="padding: 10px; border-bottom: 1px solid #ddd; background: linear-gradient(to right, #001f3f, #7FDBFF);">
+  <div style="padding: 10px; border-bottom: 1px solid #ddd; background: linear-gradient(to right, #b01605, #7FDBFF);">
   <strong style="color: #fff;">Meeting Assistant 🤖</strong>
 </div>
 
