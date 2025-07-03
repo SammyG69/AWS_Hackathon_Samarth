@@ -1865,6 +1865,19 @@ export class DemoMeetingApp
     Array.from(document.getElementsByClassName('flow')).map(
       e => ((e as HTMLDivElement).style.display = 'none')
     );
+
+    const chatbotContainer = document.getElementById('chatbot-container');
+
+    if (flow === 'flow-meeting') {
+      if (chatbotContainer) {
+        chatbotContainer.style.display = 'block';
+      }
+    } else {
+      if (chatbotContainer) {
+        chatbotContainer.style.display = 'none';
+      }
+    }
+
     (document.getElementById(flow) as HTMLDivElement).style.display = 'block';
   }
 

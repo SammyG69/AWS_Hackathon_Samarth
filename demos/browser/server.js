@@ -6,6 +6,7 @@ const { ChimeSDKMeetings } = require('@aws-sdk/client-chime-sdk-meetings');
 const { STS } = require('@aws-sdk/client-sts');
 
 const compression = require('compression');
+const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
@@ -61,6 +62,34 @@ function serve(host = '127.0.0.1:8080') {
         // Enable HTTP compression
         compression({})(request, response, () => {});
         const requestUrl = url.parse(request.url, true);
+        const staticRoot = path.join(__dirname);
+        const filePath = path.join(staticRoot, path.basename(requestUrl.pathname));
+
+        console.log('Resolved file path:', filePath);
+        if (
+          request.method === 'GET' &&
+          (requestUrl.pathname.endsWith('.png') ||
+            requestUrl.pathname.endsWith('.jpg') ||
+            requestUrl.pathname.endsWith('.jpeg') ||
+            requestUrl.pathname.endsWith('.gif'))
+        ) {
+          fs.readFile(filePath, (err, data) => {
+            if (err) {
+              respond(response, 404, 'text/plain', 'File not found');
+            } else {
+              const ext = path.extname(filePath).substring(1);
+              const mimeTypes = {
+                png: 'image/png',
+                jpg: 'image/jpeg',
+                jpeg: 'image/jpeg',
+                gif: 'image/gif',
+              };
+              respond(response, 200, mimeTypes[ext] || 'application/octet-stream', data);
+            }
+          });
+          return;
+        }
+
         if (request.method === 'GET' && requestUrl.pathname === '/') {
           // Return the contents of the index page
           respond(response, 200, 'text/html', indexPage);
