@@ -4512,9 +4512,6 @@ export class DemoMeetingApp
           return;
         }
         (document.getElementById(
-          'meeting-id'
-        ) as HTMLSpanElement).innerText = `${this.meeting} (${this.region})`;
-        (document.getElementById(
           'chime-meeting-id'
         ) as HTMLSpanElement).innerText = `Meeting ID: ${chimeMeetingId}`;
         (document.getElementById(

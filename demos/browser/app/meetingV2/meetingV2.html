@@ -6,7 +6,7 @@
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
   <title>Meeting Demo</title>
 </head>
-<body style ="background: linear-gradient(to right, #202641, #161930);">
+<body style ="background: #ddd">
 
 <div id="flow-fatal" class="flow">
   <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
@@ -25,7 +25,7 @@
   <div class="container">
     <form id="form-authenticate">
       <div class="text-center my-3">
-        <img src='/conversa-logo.png' alt="Logo" style="max-height: 160px; margin-top: 30px;" >
+        <img src='/conversa-logo.png' alt="Logo" style="height: 200px; margin-top: 60px;" >
       </div>
       <div class="form-floating row mt-3">
         <input type="name" id="inputMeeting" class="form-control" placeholder="Meeting Title or ID" required autofocus>
@@ -35,14 +35,7 @@
         <input type="name" id="inputName" class="form-control" placeholder="Your Name" required>
         <label for="inputName" style="text-align: left;">Your Name</label>
       </div>
-      <div class="form-floating row mt-3" title="Select meeting format. Helps to generate relevant real-time suggestions">
-        <select id="selectPurpose" class="form-select" style = "width:100%">
-          <option value="casual">Casual</option>
-          <option value="proffesional">Professional/work</option>
-          <option value="sales-client"><b>Customer-Client Engagement*</b></option>
-        </select>
-        <label for="selectPurpose" style="text-align: left;">Meeting Format</label>
-      </div>
+      
       <div class="form-floating row mt-3" title="Used only for meeting creation. Ignored if meeting already exists">
         <select id="inputRegion" class="form-select" style="width:100%">
           <option value="us-east-1" selected>United States (N. Virginia)</option>
@@ -309,7 +302,7 @@
             <h6><a href="https://docs.aws.amazon.com/chime/latest/APIReference/API_CreateAttendee.html">
                 CreateAttendee</a> Override</h6>
           </label>
-          <textarea class="form-control" id="create-attendee-override-input" rows="7" placeholder='{
+          <textarea class="form-control" style="display: none;" id="create-attendee-override-input" rows="7" placeholder='{
   "Attendee": {
       "ExternalUserId": "John",
       "AttendeeId": "18ba3ce2-9d76-722f-6b58-2c2fe0db5c94",
@@ -730,8 +723,8 @@
   <div class="p-2 d-none d-sm-block align-items-end" style="position:fixed;right:0;bottom:0;left:0;">
     <div class="row align-items-end">
       <div class="col">
-        <div id="chime-meeting-id" class="text-muted"></div>
-        <div id="desktop-attendee-id" class="text-muted"></div>
+        <div id="chime-meeting-id" style="display : none" class="text-muted"></div>
+        <div id="desktop-attendee-id" style="display : none" class="text-muted"></div>
       </div>
       <div class="col">
         <div class="btn-group" role="group" style="width: 100%;">
@@ -744,8 +737,8 @@
         </div>
       </div>
       <div class="col d-none d-lg-block">
-        <div id="video-uplink-bandwidth" class="text-muted text-end"></div>
-        <div id="video-downlink-bandwidth" class="text-muted text-end"></div>
+        <div id="video-uplink-bandwidth" style="display : none" class="text-muted text-end"></div>
+        <div id="video-downlink-bandwidth" style="display : none" class="text-muted text-end"></div>
       </div>
     </div>
   </div>
@@ -753,11 +746,14 @@
   <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
     <div class="row mb-3 mb-lg-0" style="flex: unset;">
       <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
-        <div id="meeting-id" class="navbar-brand text-muted m-0 m-lg-2"></div>
-        <div id="mobile-chime-meeting-id" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-attendee-id" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-uplink-bandwidth" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-downlink-bandwidth" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;">
+        <div id="logo-on-bar" class="navbar-brand d-flex align-items-center">
+  <img src="/logo-conversa.png" alt="Logo" style="height: 32px; margin-right: 8px;">
+  <span style="font-size: 20px; font-weight: 600; color: white;">CONVERSA</span>
+</div>
+        <div id="mobile-chime-meeting-id" style="display:none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
+        <div id="mobile-attendee-id" style="display:none" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
+        <div id="mobile-video-uplink-bandwidth" style="display : none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
+        <div id="mobile-video-downlink-bandwidth" style="display : none" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;">
         </div>
       </div>
       <div class="col-8 col-lg-6 order-2 order-lg-2 text-left text-lg-center">
