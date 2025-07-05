@@ -4754,18 +4754,22 @@ function setupChatbotUI() {
 }
 
 function initializeVoiceAssistant() {
-  const DEEPGRAM_KEY = '8303b6a8b1c449a7b1cc3d83aa179db29c301296';
+  const DEEPGRAM_KEY = 'fd5d872310d3065bfe696274f2e64a15f4a85614';
   const WAKE_PHRASE = 'hey conversa';
   let lastTranscript = '';
 
-  console.log('We have reached the Initial Voice Assistant');
+  const ws = new WebSocket(`wss://api.deepgram.com/v1/listen?punctuate=true&token=${DEEPGRAM_KEY}`);
 
-  const ws = new WebSocket(`wss://api.deepgram.com/v1/listen?punctuate=true`, [
-    'token',
-    DEEPGRAM_KEY,
-  ]);
+  ws.onclose = event => {
+    console.warn('WebSocket closed', event.code, event.reason);
+  };
+
+  ws.onerror = error => {
+    console.error('WebSocket error', error);
+  };
 
   ws.onopen = async () => {
+    console.log('WebSocket connection opened');
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
@@ -4774,6 +4778,7 @@ function initializeVoiceAssistant() {
     source.connect(processor);
     processor.connect(audioContext.destination);
 
+    console.log('Stage 2');
     processor.onaudioprocess = e => {
       const inputData = e.inputBuffer.getChannelData(0);
       const int16Data = new Int16Array(inputData.length);
@@ -4787,6 +4792,7 @@ function initializeVoiceAssistant() {
     };
   };
 
+  console.log('We have reached the YIPAKAYEE');
   ws.onmessage = msg => {
     const data = JSON.parse(msg.data);
     const transcript = data.channel?.alternatives?.[0]?.transcript;
@@ -4794,8 +4800,10 @@ function initializeVoiceAssistant() {
     if (transcript && transcript !== lastTranscript) {
       lastTranscript = transcript;
 
+      console.log('Stage 3');
       if (transcript.toLowerCase().includes(WAKE_PHRASE)) {
         const cleaned = transcript.toLowerCase().replace(WAKE_PHRASE, '').trim();
+        console.log('Stage 4');
         fetch('http://localhost:3001/transcript', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
