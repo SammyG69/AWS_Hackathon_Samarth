@@ -775,8 +775,11 @@ export class DemoMeetingApp
     });
 
     document.getElementById('form-authenticate').addEventListener('submit', e => {
+      console.log('WHY THIS KOLAVERI');
       e.preventDefault();
       this.redirectFromAuthentication();
+      console.log('YIIIPPPPPAAADEEEE DOOOOO');
+      initializeVoiceAssistant();
     });
 
     const earlyConnectCheckbox = document.getElementById('preconnect') as HTMLInputElement;
@@ -2149,6 +2152,7 @@ export class DemoMeetingApp
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.setupDataMessage();
     this.setupLiveTranscription();
+    initializeVoiceAssistant();
     this.audioVideo.addObserver(this);
     this.meetingSession.eventController.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
@@ -4747,4 +4751,72 @@ function setupChatbotUI() {
     dragging = false;
     toggle.style.cursor = 'grab';
   });
+}
+
+function initializeVoiceAssistant() {
+  const DEEPGRAM_KEY = '8303b6a8b1c449a7b1cc3d83aa179db29c301296';
+  const WAKE_PHRASE = 'hey conversa';
+  let lastTranscript = '';
+
+  console.log('We have reached the Initial Voice Assistant');
+
+  const ws = new WebSocket(`wss://api.deepgram.com/v1/listen?punctuate=true`, [
+    'token',
+    DEEPGRAM_KEY,
+  ]);
+
+  ws.onopen = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(stream);
+    const processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+    source.connect(processor);
+    processor.connect(audioContext.destination);
+
+    processor.onaudioprocess = e => {
+      const inputData = e.inputBuffer.getChannelData(0);
+      const int16Data = new Int16Array(inputData.length);
+
+      for (let i = 0; i < inputData.length; i++) {
+        int16Data[i] = inputData[i] * 32767;
+      }
+      if (ws.readyState === 1) {
+        ws.send(int16Data.buffer);
+      }
+    };
+  };
+
+  ws.onmessage = msg => {
+    const data = JSON.parse(msg.data);
+    const transcript = data.channel?.alternatives?.[0]?.transcript;
+
+    if (transcript && transcript !== lastTranscript) {
+      lastTranscript = transcript;
+
+      if (transcript.toLowerCase().includes(WAKE_PHRASE)) {
+        const cleaned = transcript.toLowerCase().replace(WAKE_PHRASE, '').trim();
+        fetch('http://localhost:3001/transcript', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transcript: cleaned }),
+        })
+          .then(res => res.text())
+          .then(response => {
+            console.log('LLM Response:', response);
+            const chatContainer = document.getElementById('chat-messages');
+            if (chatContainer) {
+              const newMessage = document.createElement('div');
+              newMessage.innerText = response;
+              newMessage.className = 'llm-response';
+              chatContainer.appendChild(newMessage);
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+          });
+      }
+    }
+  };
+
+  ws.onerror = e => console.error('Deepgram WebSocket error:', e);
+  ws.onclose = () => console.log('Deepgram connection closed');
 }

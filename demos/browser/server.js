@@ -11,13 +11,33 @@ const fs = require('fs');
 const http = require('http');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
+const express = require('express');
+
+const app = express();
+
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "connect-src 'self' http://localhost:3001 wss://api.deepgram.com data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://cdn.jsdelivr.net",
+      "img-src 'self' data: blob:",
+      "worker-src 'self' blob:",
+      "child-src 'self' blob:",
+      "object-src 'none'",
+    ].join('; ')
+  );
+  next();
+});
 
 // Store created meetings in a map so attendees can join by meeting title.
 const meetingTable = {};
 
 // Load the contents of the web application to be used as the index page.
-const app = process.env.npm_config_app || 'meetingV2';
-const indexPagePath = `dist/${app}.html`;
+const appName = process.env.npm_config_app || 'meetingV2';
+const indexPagePath = `dist/${appName}.html`;
 
 console.info('Using index path', indexPagePath);
 
@@ -505,10 +525,6 @@ function respond(response, statusCode, contentType, body, skipLogging = false) {
   response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   // enable shared array buffer for videoFxProcessor
   response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-  response.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; connect-src 'self' http://localhost:3001 https://* ws://* wss://*; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
-  );
   response.end(body);
   if (contentType === 'application/json' && !skipLogging) {
     log(body);
