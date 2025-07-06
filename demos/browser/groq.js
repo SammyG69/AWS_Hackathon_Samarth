@@ -3,35 +3,58 @@ import Groq from 'groq-sdk';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Prepared prompt with a placeholder for the transcript
-const basePrompt = ({ text, label, labelTranscript }) => `
-Format" **${label}**
+const questionPrompt = ({ text, labelTranscript }) => `
+🔍 Format: **QUESTION**
 
-Labelled Segment:
+📍 Labelled Segment (Question):
 "${labelTranscript}"
 
-Full Transcript:
+📜 Full Transcript:
 ${text}
 
-The Format states whether the labelled segment is a Question, Proposal or Confusion.
+You're a helpful assistant answering a question based on the entire conversation. Keep it clear, direct, and non-generic. Use the full transcript for context, but answer ONLY the question. 
 
-ALL ANSWERS NEED TO BE OF MAXIMUM AND UNDER 60 WORDS. USE EMOJIS to make the suggestions more appealing.
-
-If the Format is a QUESTION. The Labelled Segment will have the question. Use the full transcript to gain contextual understanding
-of what's being discussed but then answer the question DIRECTLY. BE SPECIFIC, NON-GENERIC, HIGHLY DETAILED,
-while also keeping your response under 60 words. Provide links to resources (e.g articles, papers or sites etc) where relevant.
-
-If the Format is a PROPOSAL, use the full transcript to understand the overarching goal or problem
-of the conversation, and then evaluate the proposal which is in the Labelled Segment
-, giving both pros and cons. BE SPECIFIC, DIRECT, AND CONCISE while under 60 words.
-Provide links to resources (e.g articles, papers or sites etc) where relevant.
-
-If the Format is a CONFUSION, use the full transcript to UNDERSTAND(not to be acted upon) the ovearching goal or problem and contextualise
-the discussion. Once understood, please clarify the confusion which is expressed in the Labelled Segment nicely. AND KEEP UR RESPONSE UNDER 60 WORDS
-Provide links to resources (e.g articles, papers or sites etc) where relevant.
-
-
+✅ Be concise (under 60 words), add emojis where fitting, and include useful links if relevant.
 `;
+
+const proposalPrompt = ({ text, labelTranscript }) => `
+📝 Format: **PROPOSAL**
+
+💡 Proposed Idea:
+"${labelTranscript}"
+
+📜 Full Transcript:
+${text}
+
+You're evaluating a suggestion in context of the whole conversation. Clearly state both pros and cons, and suggest improvements or alternatives if necessary.
+
+✅ Be direct, under 60 words, specific, include emojis and relevant links to back up points.
+`;
+
+const confusionPrompt = ({ text, labelTranscript }) => `
+❓ Format: **CONFUSION**
+
+🤔 Confused Statement:
+"${labelTranscript}"
+
+📜 Full Transcript:
+${text}
+
+You're clarifying a misunderstanding. First, understand the goal of the discussion from the full transcript. Then, kindly clarify the confusion expressed in the segment.
+
+✅ Keep it polite, helpful, under 60 words. Use emojis and relevant resource links where applicable.
+`;
+
+const getPromptByLabel = ({ text, label, labelTranscript }) => {
+  switch (label.toUpperCase()) {
+    case 'QUESTION':
+      return questionPrompt({ text, labelTranscript });
+    case 'PROPOSAL':
+      return proposalPrompt({ text, labelTranscript });
+    case 'CONFUSION':
+      return confusionPrompt({ text, labelTranscript });
+  }
+};
 
 export async function getGroqChatCompletion(content) {
   return groq.chat.completions.create({
@@ -42,8 +65,8 @@ export async function getGroqChatCompletion(content) {
 
 export async function main({ text, label, labelTranscript }) {
   try {
-    const formattedPrompt = basePrompt({ text, label, labelTranscript });
-    const chatCompletion = await getGroqChatCompletion(formattedPrompt);
+    const prompt = getPromptByLabel({ text, label, labelTranscript });
+    const chatCompletion = await getGroqChatCompletion(prompt);
     return chatCompletion.choices[0]?.message?.content || '';
   } catch (error) {
     console.error('An error occurred while fetching the chat completion:', error);
