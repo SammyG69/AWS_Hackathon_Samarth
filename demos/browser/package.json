@@ -8,7 +8,7 @@
     "build:fast": "npm run copy-assets && node script/webpack-wrapper.js",
     "build": "npm run deps && npm install && tsc && npm run build:fast",
     "start:fast": "npm run copy-assets && npx webpack serve",
-    "start:all": "concurrently \"uvicorn classifier_api:app --reload\"\"python sentiment_server.py\" \"node simple-api.js\" \"npm run start:fast\"",
+    "start:all": "concurrently \"uvicorn zero_shot:app --reload\" \"python sentiment_server.py\" \"node simple-api.js\" \"npm run start:fast\"",
     "start:hot": "npm run copy-assets && webpack serve --config ./webpack.config.hot.js",
     "start": "npm run deps && npm install && npm run start:fast"
   },
