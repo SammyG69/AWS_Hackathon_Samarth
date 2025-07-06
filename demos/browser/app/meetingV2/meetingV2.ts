@@ -2669,21 +2669,10 @@ export class DemoMeetingApp
     let transcriptBuffer = '';
     let lastFlush = Date.now();
     let sentimentBuffer: string = '';
+    let classifyBuffer = '';
+    let classifyFlush = Date.now();
     let sentimentLastFlush = Date.now();
     let negativeStreak = 0;
-    let negativeEmotions = [
-      'SAD',
-      'ANGRY',
-      'BERATED',
-      'CRAZY',
-      'CONFUSION',
-      'STRESSED',
-      'SCARED',
-      'HESITANT',
-      'DISGUSTED',
-      'FRUSTRATED',
-      'ANNOYED',
-    ];
 
     this.transcriptEventHandler = (event: any) => {
       if (!event || !event.results || !Array.isArray(event.results)) {
@@ -2697,10 +2686,40 @@ export class DemoMeetingApp
         for (const alt of result.alternatives) {
           transcriptBuffer += ` ${alt.transcript}`;
           sentimentBuffer += ` ${alt.transcript}`;
+          classifyBuffer += `${alt.transcript}`;
         }
       }
 
       const now = Date.now();
+
+      if (now - classifyFlush > 10000 && transcriptBuffer.trim().length > 0) {
+        fetch('http://localhost:8000/classify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: classifyBuffer }),
+        })
+          .then(res => res.json())
+          .then(({ label, score }) => {
+            const important = ['PROPOSAL', 'QUESTION', 'CONFUSION'];
+            if (important.includes(label.toUpperCase())) {
+              console.log(`🟡 Suggestion Point Detected: [${label}] "${classifyBuffer}"`);
+
+              const chatContainer = document.getElementById('chat-messages');
+              if (chatContainer) {
+                const marker = document.createElement('div');
+                marker.innerText = `🟡 [${label.toUpperCase()}]: ${classifyBuffer}`;
+                marker.className = 'suggestion-highlight';
+                chatContainer.appendChild(marker);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+              }
+            }
+          })
+          .catch(err => console.error('Zero-shot classification failed:', err));
+
+        classifyBuffer = '';
+        classifyFlush = now;
+      }
+
       if (now - lastFlush > 30000 && transcriptBuffer.trim().length > 0) {
         fetch('http://localhost:3001/transcript', {
           method: 'POST',
@@ -2743,7 +2762,6 @@ export class DemoMeetingApp
 
             console.log('Raw sentiment:', sentimentRaw);
             console.log('Normalised:', sentiment);
-            console.log('Negative match? SKibidi', negativeEmotions.includes(sentiment));
 
             if (sentiment === 'NEGATIVE') {
               negativeStreak += 1;
