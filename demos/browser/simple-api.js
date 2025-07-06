@@ -10,7 +10,15 @@ app.use(express.json());
 
 app.post('/transcript', async (req, res) => {
   const { text, label, labelTranscript } = req.body;
-
+  if (!text) {
+    console.log('Missing Full Transcript');
+  }
+  if (!label) {
+    console.log('Missing Label');
+  }
+  if (!labelTranscript) {
+    console.log('Missing Label Transcript');
+  }
   if (!text || !label || !labelTranscript) {
     return res
       .status(400)

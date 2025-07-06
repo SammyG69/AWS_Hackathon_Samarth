@@ -10,6 +10,9 @@ that will be appropriate for the situation and offer encouragement if the transc
 Keep it UNDER 40 WORDS at maximum and aim for 20-30, unless the situation demands it.
 
 MAKE THE COMFORT WORDS RELEVANT TO THE SITUATION WHERE POSSIBLE.
+
+Remove quotation marks around your response and any other irrelevant slashes.
+Add an emoji at the end always to brighten the persons day.
 ${transcript}
 `;
 

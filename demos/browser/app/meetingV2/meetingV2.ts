@@ -2738,7 +2738,7 @@ export class DemoMeetingApp
         classifyFlush = now;
       }
 
-      if (now - sentimentLastFlush > 7000 && sentimentBuffer.trim().length > 0) {
+      if (now - sentimentLastFlush > 12000 && sentimentBuffer.trim().length > 0) {
         console.log(`[Sentiment Buffer]: ${sentimentBuffer}`);
         fetch('http://localhost:3001/sentiment', {
           method: 'POST',
