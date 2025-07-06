@@ -2713,7 +2713,7 @@ export class DemoMeetingApp
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  fullTranscript: windowedTranscript.trim(),
+                  text: windowedTranscript.trim(),
                   label: label.toUpperCase(),
                   labelTranscript: classifyBuffer,
                 }),

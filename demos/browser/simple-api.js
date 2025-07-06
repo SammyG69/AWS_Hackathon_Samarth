@@ -24,6 +24,7 @@ app.post('/transcript', async (req, res) => {
       .status(400)
       .send('Missing one or more required fields: text, label, labelTranscript');
   }
+  console.log('We have arrived inside classify');
 
   try {
     console.log(`🟡 Incoming classified segment:
@@ -31,7 +32,7 @@ app.post('/transcript', async (req, res) => {
     Label Transcript: "${labelTranscript}"
     Full Transcript: "${text}"`);
 
-    const suggestions = await main(labelTranscript);
+    const suggestions = await main({ text, label, labelTranscript });
     res.send({
       suggestions,
       label,
