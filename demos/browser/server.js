@@ -22,7 +22,7 @@ app.use((req, res, next) => {
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
-      "connect-src 'self' http://localhost:3001 wss://api.deepgram.com data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://cdn.jsdelivr.net",
+      "connect-src 'self'  http://localhost:8000 http://localhost:3001 wss://api.deepgram.com data: https://*.chime.aws wss://*.chime.aws https://*.amazonaws.com https://cdn.jsdelivr.net",
       "img-src 'self' data: blob:",
       "worker-src 'self' blob:",
       "child-src 'self' blob:",

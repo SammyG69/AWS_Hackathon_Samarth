@@ -2663,7 +2663,6 @@ export class DemoMeetingApp
 
   setupLiveTranscription = () => {
     let transcriptBuffer: { text: string; timestamp: number }[] = [];
-    let lastFlush = Date.now();
     let sentimentBuffer: string = '';
     let classifyBuffer = '';
     let classifyFlush = Date.now();
