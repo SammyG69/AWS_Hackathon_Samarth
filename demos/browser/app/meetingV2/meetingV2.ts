@@ -2662,7 +2662,7 @@ export class DemoMeetingApp
   };
 
   setupLiveTranscription = () => {
-    let transcriptBuffer = '';
+    let transcriptBuffer: { text: string; timestamp: number }[] = [];
     let lastFlush = Date.now();
     let sentimentBuffer: string = '';
     let classifyBuffer = '';
@@ -2680,7 +2680,11 @@ export class DemoMeetingApp
         if (result.isPartial) continue;
 
         for (const alt of result.alternatives) {
-          transcriptBuffer += ` ${alt.transcript}`;
+          transcriptBuffer.push({
+            text: alt.transcript,
+            timestamp: Date.now(),
+          });
+
           sentimentBuffer += ` ${alt.transcript}`;
           classifyBuffer += `${alt.transcript}`;
         }
@@ -2688,7 +2692,7 @@ export class DemoMeetingApp
 
       const now = Date.now();
 
-      if (now - classifyFlush > 10000 && transcriptBuffer.trim().length > 0) {
+      if (now - classifyFlush > 10000 && transcriptBuffer.length > 0) {
         fetch('http://localhost:8000/classify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -2700,11 +2704,17 @@ export class DemoMeetingApp
             if (important.includes(label.toUpperCase())) {
               console.log(`🟡 Suggestion Point Detected: [${label}] "${classifyBuffer}"`);
 
+              const ninetySecondsAgo = Date.now() - 90_000;
+              const windowedTranscript = transcriptBuffer
+                .filter(item => item.timestamp >= ninetySecondsAgo)
+                .map(item => item.text)
+                .join(' ');
+
               fetch('http://localhost:3001/transcript', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  fullTranscript: transcriptBuffer,
+                  fullTranscript: windowedTranscript.trim(),
                   label: label.toUpperCase(),
                   labelTranscript: classifyBuffer,
                 }),
