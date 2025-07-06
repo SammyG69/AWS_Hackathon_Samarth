@@ -775,11 +775,8 @@ export class DemoMeetingApp
     });
 
     document.getElementById('form-authenticate').addEventListener('submit', e => {
-      console.log('WHY THIS KOLAVERI');
       e.preventDefault();
       this.redirectFromAuthentication();
-      console.log('YIIIPPPPPAAADEEEE DOOOOO');
-      initializeVoiceAssistant();
     });
 
     const earlyConnectCheckbox = document.getElementById('preconnect') as HTMLInputElement;
@@ -2152,7 +2149,6 @@ export class DemoMeetingApp
     this.setupSubscribeToAttendeeIdPresenceHandler();
     this.setupDataMessage();
     this.setupLiveTranscription();
-    initializeVoiceAssistant();
     this.audioVideo.addObserver(this);
     this.meetingSession.eventController.addObserver(this);
     this.audioVideo.addContentShareObserver(this);
@@ -2704,14 +2700,27 @@ export class DemoMeetingApp
             if (important.includes(label.toUpperCase())) {
               console.log(`🟡 Suggestion Point Detected: [${label}] "${classifyBuffer}"`);
 
-              const chatContainer = document.getElementById('chat-messages');
-              if (chatContainer) {
-                const marker = document.createElement('div');
-                marker.innerText = `🟡 [${label.toUpperCase()}]: ${classifyBuffer}`;
-                marker.className = 'suggestion-highlight';
-                chatContainer.appendChild(marker);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-              }
+              fetch('http://localhost:3001/transcript', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  fullTranscript: transcriptBuffer,
+                  label: label.toUpperCase(),
+                  labelTranscript: classifyBuffer,
+                }),
+              })
+                .then(res => res.text())
+                .then(response => {
+                  console.log('LLM Response:', response);
+                  const chatContainer = document.getElementById('chat-messages');
+                  if (chatContainer) {
+                    const newMessage = document.createElement('div');
+                    newMessage.innerText = response;
+                    newMessage.className = 'llm-response';
+                    chatContainer.appendChild(newMessage);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                  }
+                });
             }
           })
           .catch(err => console.error('Zero-shot classification failed:', err));
@@ -2720,29 +2729,6 @@ export class DemoMeetingApp
         classifyFlush = now;
       }
 
-      if (now - lastFlush > 30000 && transcriptBuffer.trim().length > 0) {
-        fetch('http://localhost:3001/transcript', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transcript: transcriptBuffer }),
-        })
-          .then(res => res.text())
-          .then(response => {
-            console.log('LLM Response:', response);
-            const chatContainer = document.getElementById('chat-messages');
-            if (chatContainer) {
-              const newMessage = document.createElement('div');
-              newMessage.innerText = response;
-              newMessage.className = 'llm-response';
-              chatContainer.appendChild(newMessage);
-              chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-          })
-          .catch(err => console.error('Failed to send transcript:', err));
-
-        transcriptBuffer = '';
-        lastFlush = now;
-      }
       if (now - sentimentLastFlush > 7000 && sentimentBuffer.trim().length > 0) {
         console.log(`[Sentiment Buffer]: ${sentimentBuffer}`);
         fetch('http://localhost:3001/sentiment', {
@@ -4769,80 +4755,4 @@ function setupChatbotUI() {
     dragging = false;
     toggle.style.cursor = 'grab';
   });
-}
-
-function initializeVoiceAssistant() {
-  const DEEPGRAM_KEY = 'fd5d872310d3065bfe696274f2e64a15f4a85614';
-  const WAKE_PHRASE = 'hey conversa';
-  let lastTranscript = '';
-
-  const ws = new WebSocket(`wss://api.deepgram.com/v1/listen?punctuate=true&token=${DEEPGRAM_KEY}`);
-
-  ws.onclose = event => {
-    console.warn('WebSocket closed', event.code, event.reason);
-  };
-
-  ws.onerror = error => {
-    console.error('WebSocket error', error);
-  };
-
-  ws.onopen = async () => {
-    console.log('WebSocket connection opened');
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const audioContext = new AudioContext();
-    const source = audioContext.createMediaStreamSource(stream);
-    const processor = audioContext.createScriptProcessor(4096, 1, 1);
-
-    source.connect(processor);
-    processor.connect(audioContext.destination);
-
-    console.log('Stage 2');
-    processor.onaudioprocess = e => {
-      const inputData = e.inputBuffer.getChannelData(0);
-      const int16Data = new Int16Array(inputData.length);
-
-      for (let i = 0; i < inputData.length; i++) {
-        int16Data[i] = inputData[i] * 32767;
-      }
-      if (ws.readyState === 1) {
-        ws.send(int16Data.buffer);
-      }
-    };
-  };
-
-  console.log('We have reached the YIPAKAYEE');
-  ws.onmessage = msg => {
-    const data = JSON.parse(msg.data);
-    const transcript = data.channel?.alternatives?.[0]?.transcript;
-
-    if (transcript && transcript !== lastTranscript) {
-      lastTranscript = transcript;
-
-      console.log('Stage 3');
-      if (transcript.toLowerCase().includes(WAKE_PHRASE)) {
-        const cleaned = transcript.toLowerCase().replace(WAKE_PHRASE, '').trim();
-        console.log('Stage 4');
-        fetch('http://localhost:3001/transcript', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transcript: cleaned }),
-        })
-          .then(res => res.text())
-          .then(response => {
-            console.log('LLM Response:', response);
-            const chatContainer = document.getElementById('chat-messages');
-            if (chatContainer) {
-              const newMessage = document.createElement('div');
-              newMessage.innerText = response;
-              newMessage.className = 'llm-response';
-              chatContainer.appendChild(newMessage);
-              chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-          });
-      }
-    }
-  };
-
-  ws.onerror = e => console.error('Deepgram WebSocket error:', e);
-  ws.onclose = () => console.log('Deepgram connection closed');
 }

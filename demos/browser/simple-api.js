@@ -9,12 +9,26 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/transcript', async (req, res) => {
-  const { transcript } = req.body;
-  if (!transcript) return res.status(400).send('Transcript missing');
+  const { text, label, labelTranscript } = req.body;
+
+  if (!text || !label || !labelTranscript) {
+    return res
+      .status(400)
+      .send('Missing one or more required fields: text, label, labelTranscript');
+  }
 
   try {
-    const suggestions = await main(transcript);
-    res.send(suggestions);
+    console.log(`🟡 Incoming classified segment:
+    Label: ${label}
+    Label Transcript: "${labelTranscript}"
+    Full Transcript: "${text}"`);
+
+    const suggestions = await main(labelTranscript);
+    res.send({
+      suggestions,
+      label,
+      labelTranscript,
+    });
   } catch (e) {
     console.error(e);
     res.status(500).send('Error generating suggestions');
@@ -43,6 +57,25 @@ app.post('/sentiment', async (req, res) => {
   } catch (err) {
     console.error('Sentiment error:', err);
     res.status(500).json({ error: 'Error analyzing sentiment' }); // <-- return JSON
+  }
+});
+
+app.post('/classify', async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).send('Text is required');
+
+  try {
+    const result = await fetch('http://localhost:8000/classify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+
+    const data = await result.json();
+    res.json(data);
+  } catch (err) {
+    console.error('Classification error:', err);
+    res.status(500).json({ error: 'Error during classification' });
   }
 });
 

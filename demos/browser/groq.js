@@ -4,24 +4,33 @@ import Groq from 'groq-sdk';
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Prepared prompt with a placeholder for the transcript
-const basePrompt = transcript => `
-Imagine yourself as a third party to this conversation. Identify the overarching problem or goal first AND DO NOT SAY ANYTHING ONCE YOU IDENTIFY AND DONT STATE THE OVERARCHING PROBLEM OR ANYTHING SYNONYMOUS
-After identifying the goal or problem, highlight key concerns individuals are having. DO NOT SAY OR PRINT THIS
+const basePrompt = ({ text, label, labelTranscript }) => `
+Format" **${label}**
 
-Make sure to contextualise the discussion. DO NOT PRINT THIS. 
-Provide DETAILED, SPECIFIC, RELEVANT, NON-GENERIC, sugggestions on what can be done better by all the parties or
-some ideas they may have missed that could make achievement of their goal much more better. 
-Include DETAILED, SPECIFIC, RELEVANT, NON-GENERIC related suggestions based on the context and
-not generalized ones. 
-Provide examples where applicable, mention valid PROPER NOUNS (e.g apps, locations, games) and avoid vague sentences and generalistic advice. Provide
-advice that is relatable and beneficial to the situation in hand.
-Keep it CONCISE AND LIMITED TO 50 words MAX. ONLY RETURN SUGGESTIONS, NOT A SUMMARY, OR HIGHLIGHTS ABOUT THE SITUATION, OR ANYTHING IRRELEVANT.
-WHERE necessary, provide links to resources (e.g articles, websites, papers etcc)
+Labelled Segment:
+"${labelTranscript}"
 
-Be CLEAR, DIRECT and CONCISE
+Full Transcript:
+${text}
 
-Transcript:
-${transcript}
+The Format states whether the labelled segment is a Question, Proposal or Confusion.
+
+ALL ANSWERS NEED TO BE OF MAXIMUM AND UNDER 60 WORDS. USE EMOJIS to make the suggestions more appealing.
+
+If the Format is a QUESTION. The Labelled Segment will have the question. Use the full transcript to gain contextual understanding
+of what's being discussed but then answer the question DIRECTLY. BE SPECIFIC, NON-GENERIC, HIGHLY DETAILED,
+while also keeping your response under 60 words. Provide links to resources (e.g articles, papers or sites etc) where relevant.
+
+If the Format is a PROPOSAL, use the full transcript to understand the overarching goal or problem
+of the conversation, and then evaluate the proposal which is in the Labelled Segment
+, giving both pros and cons. BE SPECIFIC, DIRECT, AND CONCISE while under 60 words.
+Provide links to resources (e.g articles, papers or sites etc) where relevant.
+
+If the Format is a CONFUSION, use the full transcript to UNDERSTAND(not to be acted upon) the ovearching goal or problem and contextualise
+the discussion. Once understood, please clarify the confusion which is expressed in the Labelled Segment nicely. AND KEEP UR RESPONSE UNDER 60 WORDS
+Provide links to resources (e.g articles, papers or sites etc) where relevant.
+
+
 `;
 
 export async function getGroqChatCompletion(content) {
@@ -31,9 +40,9 @@ export async function getGroqChatCompletion(content) {
   });
 }
 
-export async function main(transcriptText) {
+export async function main({ text, label, labelTranscript }) {
   try {
-    const formattedPrompt = basePrompt(transcriptText);
+    const formattedPrompt = basePrompt({ text, label, labelTranscript });
     const chatCompletion = await getGroqChatCompletion(formattedPrompt);
     return chatCompletion.choices[0]?.message?.content || '';
   } catch (error) {
