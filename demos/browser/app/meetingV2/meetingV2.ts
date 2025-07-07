@@ -3,6 +3,8 @@
 
 import './styleV2.scss';
 
+import { marked } from 'marked';
+
 import {
   AllHighestVideoBandwidthPolicy,
   ApplicationMetadata,
@@ -2718,13 +2720,15 @@ export class DemoMeetingApp
                   labelTranscript: classifyBuffer,
                 }),
               })
-                .then(res => res.text())
-                .then(response => {
+                .then(res => res.json())
+                .then(async response => {
                   console.log('LLM Response:', response);
+                  const { suggestions } = response;
                   const chatContainer = document.getElementById('chat-messages');
+                  const html = await marked.parse(suggestions);
                   if (chatContainer) {
                     const newMessage = document.createElement('div');
-                    newMessage.innerText = response;
+                    newMessage.innerHTML = html;
                     newMessage.className = 'llm-response';
                     chatContainer.appendChild(newMessage);
                     chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -2736,67 +2740,6 @@ export class DemoMeetingApp
 
         classifyBuffer = '';
         classifyFlush = now;
-      }
-
-      if (now - sentimentLastFlush > 12000 && sentimentBuffer.trim().length > 0) {
-        console.log(`[Sentiment Buffer]: ${sentimentBuffer}`);
-        fetch('http://localhost:3001/sentiment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transcript: sentimentBuffer }),
-        })
-          .then(res => {
-            if (!res.ok) {
-              throw new Error(`HTTP error ${res.status}`);
-            }
-            return res.json();
-          })
-          .then(data => {
-            const sentimentRaw = data.sentiment || 'neutral';
-            const sentiment = sentimentRaw.trim().toUpperCase();
-
-            console.log('Raw sentiment:', sentimentRaw);
-            console.log('Normalised:', sentiment);
-
-            if (sentiment === 'NEGATIVE') {
-              negativeStreak += 1;
-              console.log(`🔴 Negative streak: ${negativeStreak}`);
-            } else {
-              negativeStreak = 0;
-            }
-
-            if (negativeStreak >= 2) {
-              fetch('http://localhost:3001/encouragement', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ transcript: sentimentBuffer }), // make sure this has data!
-              })
-                .then(res => res.text())
-                .then(tip => {
-                  console.log('Encouragement:', tip);
-                  const chatContainer = document.getElementById('chat-messages');
-                  if (chatContainer) {
-                    const encouragement = document.createElement('div');
-                    encouragement.innerText = tip;
-                    encouragement.className = 'encouragement';
-                    chatContainer.appendChild(encouragement);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                  }
-                })
-                .catch(console.error)
-                .finally(() => {
-                  negativeStreak = 0;
-                  sentimentBuffer = '';
-                  sentimentLastFlush = now;
-                });
-            } else {
-              sentimentBuffer = '';
-              sentimentLastFlush = now;
-            }
-          })
-          .catch(err => {
-            console.error('Sentiment API failed:', err);
-          });
       }
     };
 

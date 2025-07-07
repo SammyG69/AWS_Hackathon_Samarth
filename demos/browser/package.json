@@ -53,6 +53,7 @@
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
     "markdown-it": "^13.0.1",
+    "marked": "^16.0.0",
     "ngrok": "^4.3.3",
     "node-fetch": "^3.3.2",
     "popper.js": "^1.15.0",
