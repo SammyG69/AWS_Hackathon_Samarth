@@ -29,8 +29,8 @@ $light: $gray-200;
 $dark: $gray-700;
 $yiq-contrasted-threshold: 175;
 $link-color: $success;
-$font-family-base: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-  'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+$font-family-base: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+  Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 $font-size-base: 0.9375rem;
 $form-select-color: $gray-700;
 $h1-font-size: 3rem;
@@ -289,11 +289,11 @@ $overlay-z-index: 10;
 // Forms =======================================================================
 
 #primary-meeting-external-id {
-    display: none;
+  display: none;
 }
 
 #replica-meeting-input:checked ~ #primary-meeting-external-id {
-    display: block;
+  display: block;
 }
 
 // Navs ========================================================================
@@ -517,7 +517,7 @@ svg {
     margin-top: 7px;
   }
 
-  #video-preview  {
+  #video-preview {
     max-height: 180px;
   }
 }
@@ -529,7 +529,7 @@ svg {
   padding-top: 10px;
 }
 
-@media(min-width: 576px) {
+@media (min-width: 576px) {
   .video-preview {
     width: 100%;
     max-height: 300px;
@@ -537,7 +537,7 @@ svg {
     margin-top: 0;
   }
 
-  #video-preview  {
+  #video-preview {
     max-height: 300px;
   }
 }
@@ -883,7 +883,6 @@ a.markdown:active {
 }
 
 .video-tile.content {
-
   .video-tile-video {
     object-fit: contain !important;
     background-color: #313030;
@@ -964,11 +963,11 @@ a.markdown:active {
 }
 
 .vf-active::before {
-  content: "✓ "
+  content: '✓ ';
 }
 
 .live-transcription-active::before {
-  content: "✓ "
+  content: '✓ ';
 }
 
 .transcript-container {
@@ -1004,7 +1003,7 @@ a.markdown:active {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
@@ -1039,7 +1038,7 @@ a.markdown:active {
   width: fit-content;
   font-size: 32px;
   font-weight: bold;
-  margin-left: auto
+  margin-left: auto;
 }
 
 .close:hover,
@@ -1081,12 +1080,32 @@ a.markdown:active {
   overflow-wrap: break-word;
 }
 
-input[type="file"] { 
+input[type='file'] {
   opacity: 0;
   z-index: -1;
   position: absolute;
 }
 
-input[type="file"]:focus + label {
+input[type='file']:focus + label {
   outline: 2px solid;
+}
+
+.llm-suggestion-block {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-left: 5px solid #08ba0b;
+  background-color: #f4faff;
+  border-radius: 0.5rem;
+}
+
+.llm-suggestion-header {
+  font-weight: bold;
+  font: caption;
+  margin-bottom: 0.5rem;
+  color: #2e86de;
+}
+
+.llm-suggestion-body {
+  line-height: 1.5;
 }

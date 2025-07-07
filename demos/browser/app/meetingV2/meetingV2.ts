@@ -2740,10 +2740,20 @@ export class DemoMeetingApp
                   const chatContainer = document.getElementById('chat-messages');
                   const html = await marked.parse(suggestions);
                   if (chatContainer) {
-                    const newMessage = document.createElement('div');
-                    newMessage.innerHTML = html;
-                    newMessage.className = 'llm-response';
-                    chatContainer.appendChild(newMessage);
+                    const suggestionWrapper = document.createElement('div');
+                    suggestionWrapper.className = 'llm-suggestion-block';
+
+                    const header = document.createElement('div');
+                    header.className = 'llm-suggestion-header';
+                    header.innerText = `💡 Suggestion:`;
+
+                    const body = document.createElement('div');
+                    body.innerHTML = html;
+                    body.className = 'llm-suggestion-body';
+
+                    suggestionWrapper.appendChild(header);
+                    suggestionWrapper.appendChild(body);
+                    chatContainer.appendChild(suggestionWrapper);
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                   }
                 });
