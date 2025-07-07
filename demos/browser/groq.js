@@ -13,8 +13,8 @@ const questionPrompt = ({ text, labelTranscript }) => `
 ${text}
 
 You're a helpful assistant answering a question based on the entire conversation. Keep it clear, direct, and non-generic. Use the full transcript for context, but answer ONLY the question. 
-
-✅ Be concise (under 60 words), add emojis where fitting, and include useful links if relevant.
+DO NOT STATE THE QUESTION AS IT WASTES THE WORDS
+✅ Be concise (under 60 words), add emojis where fitting, and include useful links if relevant. PROVIDE A CLEAR, SHARP AND CONCISE ANSWER. 
 `;
 
 const proposalPrompt = ({ text, labelTranscript }) => `
@@ -27,6 +27,7 @@ const proposalPrompt = ({ text, labelTranscript }) => `
 ${text}
 
 You're evaluating a suggestion in context of the whole conversation. Clearly state both pros and cons, and suggest improvements or alternatives if necessary.
+DO NOT STATE THE IDEA FULLY. JUST EVALUATE IT AND OFFER SUGGESTIONS
 
 ✅ Be direct, under 60 words, specific, include emojis and relevant links to back up points.
 `;
@@ -39,8 +40,9 @@ const confusionPrompt = ({ text, labelTranscript }) => `
 
 📜 Full Transcript:
 ${text}
-
-You're clarifying a misunderstanding. First, understand the goal of the discussion from the full transcript. Then, kindly clarify the confusion expressed in the segment.
+Pretend you are a third party to this conversation and are there to provide suggestions.
+You're clarifying a misunderstanding or solving a confusion. First, understand the goal of the discussion from the full transcript. DO NOT RETURN THIS OR MENTION THIS
+. Then, kindly clarify the confusion expressed in the segment and offer CLEAR, DIRECT AND CONCISE SUGGESTIONS.JUST GIVE THE SUGGESTION, NO FLUFF
 
 ✅ Keep it polite, helpful, under 60 words. Use emojis and relevant resource links where applicable.
 `;

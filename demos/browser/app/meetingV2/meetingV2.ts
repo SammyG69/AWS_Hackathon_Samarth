@@ -2665,15 +2665,12 @@ export class DemoMeetingApp
 
   setupLiveTranscription = () => {
     let transcriptBuffer: { text: string; timestamp: number }[] = [];
-    let sentimentBuffer: string = '';
     let classifyBuffer = '';
     let classifyFlush = Date.now();
-    let sentimentLastFlush = Date.now();
-    let negativeStreak = 0;
 
     this.transcriptEventHandler = (event: any) => {
       if (!event || !event.results || !Array.isArray(event.results)) {
-        console.warn('❗ Transcript event missing expected "results" array:', event);
+        console.warn('❗Transcript event missing expected "results" array:', event);
         return;
       }
 
@@ -2685,15 +2682,20 @@ export class DemoMeetingApp
             text: alt.transcript,
             timestamp: Date.now(),
           });
-
-          sentimentBuffer += ` ${alt.transcript}`;
           classifyBuffer += `${alt.transcript}`;
         }
       }
-
       const now = Date.now();
-
       if (now - classifyFlush > 10000 && transcriptBuffer.length > 0) {
+        const cleaned = classifyBuffer.trim();
+        const fillerFiltered = cleaned.replace(/\b(uh+|mm+|um+|uhm+)\b/gi, '').trim();
+        if (!fillerFiltered || fillerFiltered.length < 5) {
+          console.warn('🛑 Skipping classification: filler-only content');
+          classifyBuffer = '';
+          classifyFlush = now;
+          return;
+        }
+
         fetch('http://localhost:8000/classify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -2702,7 +2704,7 @@ export class DemoMeetingApp
           .then(res => res.json())
           .then(({ label, score }) => {
             const important = ['PROPOSAL', 'QUESTION', 'CONFUSION'];
-            if (important.includes(label.toUpperCase())) {
+            if (important.includes(label.toUpperCase()) && score > 0.65) {
               console.log(`🟡 Suggestion Point Detected: [${label}] "${classifyBuffer}"`);
 
               const ninetySecondsAgo = Date.now() - 90_000;
