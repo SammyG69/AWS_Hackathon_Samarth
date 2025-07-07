@@ -2665,7 +2665,7 @@ export class DemoMeetingApp
 
   setupLiveTranscription = () => {
     let transcriptBuffer: { text: string; timestamp: number }[] = [];
-    let classifyBuffer = '';
+    let classifyBuffer: { text: string; timestamp: number }[] = [];
     let classifyFlush = Date.now();
 
     this.transcriptEventHandler = (event: any) => {
@@ -2682,16 +2682,26 @@ export class DemoMeetingApp
             text: alt.transcript,
             timestamp: Date.now(),
           });
-          classifyBuffer += `${alt.transcript}`;
+          classifyBuffer.push({
+            text: alt.transcript,
+            timestamp: Date.now(),
+          });
         }
       }
       const now = Date.now();
-      if (now - classifyFlush > 10000 && transcriptBuffer.length > 0) {
-        const cleaned = classifyBuffer.trim();
-        const fillerFiltered = cleaned.replace(/\b(uh+|mm+|um+|uhm+)\b/gi, '').trim();
-        if (!fillerFiltered || fillerFiltered.length < 5) {
-          console.warn('🛑 Skipping classification: filler-only content');
-          classifyBuffer = '';
+      if (now - classifyFlush > 6000 && transcriptBuffer.length > 0 && classifyBuffer.length > 0) {
+        const tenSecondsAgo = now - 10_000;
+
+        const labelWindowedTranscript = classifyBuffer
+          .filter(item => item.timestamp >= tenSecondsAgo)
+          .map(item => item.text)
+          .join(' ')
+          .replace(/\b(uh+|mm+|um+|uhm+)\b/gi, '')
+          .trim();
+
+        if (!labelWindowedTranscript || labelWindowedTranscript.length < 5) {
+          console.warn('🛑 Skipping classification: not enough content');
+          classifyBuffer = [];
           classifyFlush = now;
           return;
         }
@@ -2699,13 +2709,14 @@ export class DemoMeetingApp
         fetch('http://localhost:8000/classify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: classifyBuffer }),
+          body: JSON.stringify({ text: labelWindowedTranscript.trim() }),
         })
           .then(res => res.json())
           .then(({ label, score }) => {
             const important = ['PROPOSAL', 'QUESTION', 'CONFUSION'];
-            if (important.includes(label.toUpperCase()) && score > 0.65) {
-              console.log(`🟡 Suggestion Point Detected: [${label}] "${classifyBuffer}"`);
+            console.log(`THE SCORE IS: ${score}. The classification is ${label.toUpperCase()}`);
+            if (important.includes(label.toUpperCase()) && score > 0.45) {
+              console.log(`🟡 Suggestion Point Detected: [${label}] "${labelWindowedTranscript}"`);
 
               const ninetySecondsAgo = Date.now() - 90_000;
               const windowedTranscript = transcriptBuffer
@@ -2739,8 +2750,6 @@ export class DemoMeetingApp
             }
           })
           .catch(err => console.error('Zero-shot classification failed:', err));
-
-        classifyBuffer = '';
         classifyFlush = now;
       }
     };
