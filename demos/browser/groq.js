@@ -67,7 +67,7 @@ export async function main({ text, label, labelTranscript }) {
   try {
     const prompt = getPromptByLabel({ text, label, labelTranscript });
     const chatCompletion = await getGroqChatCompletion(prompt);
-    return chatCompletion.choices[0]?.message?.content || '';
+    return chatCompletion.choices[0]?.message?.content?.replace(/\*\*/g, '')?.replace(/\\n/g, '\n');
   } catch (error) {
     console.error('An error occurred while fetching the chat completion:', error);
     throw error;

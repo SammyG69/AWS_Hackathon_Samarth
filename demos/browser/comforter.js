@@ -27,7 +27,7 @@ export async function comforter(transcriptText) {
   try {
     const formattedPrompt = basePrompt(transcriptText);
     const chatCompletion = await getGroqChatCompletion(formattedPrompt);
-    return chatCompletion.choices[0]?.message?.content || '';
+    return chatCompletion.choices[0]?.message?.content?.replace(/\*\*/g, '')?.replace(/\\n/g, '\n');
   } catch (error) {
     console.error('An error occurred while fetching the chat completion:', error);
     throw error;
