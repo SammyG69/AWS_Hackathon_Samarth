@@ -13,7 +13,8 @@ const questionPrompt = ({ text, labelTranscript }) => `
 ${text}
 
 You're a helpful assistant answering a question based on the entire conversation. Keep it clear, direct, and non-generic. Use the full transcript for context, but answer ONLY the question. 
-DO NOT STATE THE QUESTION AS IT WASTES THE WORDS
+DO NOT STATE THE QUESTION AS IT WASTES THE WORDS.
+For example, if the question is about a coding problem, give the solution directly rather than giving a suggestion.
 ✅ Be concise (under 100 words), add emojis where fitting, and include useful links if relevant. PROVIDE A CLEAR, SHARP AND CONCISE ANSWER. 
 `;
 
