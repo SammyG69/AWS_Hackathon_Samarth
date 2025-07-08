@@ -6,7 +6,7 @@
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
   <title>Meeting Demo</title>
 </head>
-<body style ="background: linear-gradient(120deg, #f0ece6 10%, #d4cdc4 40%, #c2bbb1 90%);">
+<body style ="background: linear-gradient(120deg, #ddd8d0 10%, #c1bab0 40%, #a2988b 90%);">
 <div id="flow-fatal" class="flow">
   <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
     <h1>Fatal error</h1>
@@ -742,141 +742,7 @@
     </div>
   </div>
   <audio id="meeting-audio" style="display:none"></audio>
-  <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
-    <div class="row mb-3 mb-lg-0" style="flex: unset; background: #bcd3ea; border: solid 0.5px #000000; background: linear-gradient(to right, #a6a5a3, #7b7a77)">
-      <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
-        <div id="mobile-chime-meeting-id" style="display:none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-attendee-id" style="display:none" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-uplink-bandwidth" style="display : none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
-        <div id="mobile-video-downlink-bandwidth" style="display : none" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;">
-        </div>
-      </div>
-      <div class="col-8 col-lg-6 order-2 order-lg-2 text-left text-lg-center">
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
-          <button id="button-microphone" type="button" class="btn btn-success" title="Toggle microphone">
-            <%= require('../../node_modules/open-iconic/svg/microphone.svg') %>
-          </button>
-          <button id="button-microphone-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                  aria-expanded="false" title="Select microphone"><span class="visually-hidden">Toggle Dropdown</span></button>
-          <div id="dropdown-menu-microphone" class="dropdown-menu dropdown-menu-end"
-               aria-labelledby="button-microphone-drop" x-placement="bottom-start"
-               style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a class="dropdown-item" href="#">Default microphone</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle camera">
-          <button id="button-camera" type="button" class="btn btn-success" title="Toggle camera">
-            <%= require('../../node_modules/open-iconic/svg/video.svg') %>
-          </button>
-          <button id="button-camera-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-                  aria-expanded="false" title="Select camera"><span class="visually-hidden">Toggle Dropdown</span></button>
-          <div id="dropdown-menu-camera" class="dropdown-menu dropdown-menu-end">
-            <a class="dropdown-item" href="#">Default camera</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter">
-          <button id="button-video-filter" type="button" class="btn btn-success" title="Apply filter">
-            <%= require('../../node_modules/open-iconic/svg/contrast.svg') %>
-          </button>
-          <button id="button-video-filter-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
-          <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
-            <a class="dropdown-item" href="#">No filter</a>
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle content share">
-          <button id="button-content-share" type="button" class="btn btn-success" title="Toggle content share">
-            <%= require('../../node_modules/open-iconic/svg/camera-slr.svg') %>
-          </button>
-          <button id="button-content-share-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  title="Select content to share"></button>
-          <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-content-share-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
-            data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content Sharing</a>
-            <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item" href="#">Pause Content Share</a>
-            <hr class="dropdown-divider">
-            <a id="dropdown-item-content-share-screen-capture" class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
-            <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option" href="#">Test Video</a>
-            <a id="dropdown-item-content-share-test-mono-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Mono
-              Audio Speech</a>
-            <a id="dropdown-item-content-share-test-stereo-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Stereo
-              Audio Speech</a>
-            <a id="dropdown-item-content-share-test-stereo-audio-tone" class="dropdown-item content-share-source-option" href="#">Test Stereo
-              Tone (L-500Hz R-1000Hz)</a>
-            <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option" for="content-share-item">Local file</label>
-            <input id="content-share-item" type="file">
-          </div>
-        </div>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker">
-          <button id="button-speaker" type="button" class="btn btn-success" title="Toggle speaker">
-            <%= require('../../node_modules/open-iconic/svg/volume-low.svg') %>
-          </button>
-          <button id="button-speaker-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
-          <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="button-speaker-drop" x-placement="bottom-start"
-                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-            <a class="dropdown-item" href="#">Default speaker</a>
-          </div>
-        </div>
-        <button id="button-live-transcription" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Toggle live transcription display" data-bs-toggle="button" aria-pressed="false" autocomplete="off"
-                style="display: none">
-          <%= require('../../node_modules/open-iconic/svg/code.svg') %>
-        </button>
-        <button id="button-video-stats" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
-        </button>
-        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination">
-          <div class="btn-group" role="group">
-            <button id="button-video-recording-drop" type="button" class="btn btn-success dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
-              <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
-            </button>
-            <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
-                 aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
-              <button id="button-record-self" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <svg class="svg">
-                  <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
-                </svg>
-                Capture Media to Device
-              </button>
-              <button id="button-record-cloud" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
-                Capture Media to S3
-              </button>
-              <button id="button-live-connector" type="button" class="btn btn-success mx-1 mx-xl-2 my-2 dropdown-item"
-                      title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
-                <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
-                Broadcast Media to IVS
-              </button>
-            </div>
-          </div>
-        </div>
-        <button id="button-promote-to-primary" type="button" class="btn btn-success mx-1 mx-xl-2 my-2"
-                title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
-                autocomplete="off">
-          <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
-        </button>
-      </div>
-      <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right">
-        <button id="button-meeting-leave" type="button" class="btn btn-outline-success mx-1 mx-xl-2 my-2 px-4"
-                title="Leave meeting">
-          <%= require('../../node_modules/open-iconic/svg/account-logout.svg') %>
-        </button>
-        <button id="button-meeting-end" type="button" class="btn btn-outline-danger mx-1 mx-xl-2 my-2 px-4"
-                title="End meeting">
-          <%= require('../../node_modules/open-iconic/svg/power-standby.svg') %>
-        </button>
-      </div>
-    </div>
+  <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column"> 
     <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset; ">
       <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-6 col-md-5 col-lg-4 h-100">
         <div id="chatbot-panel" class="flow-meeting" style="
@@ -978,6 +844,142 @@
       <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none; position:static"></video>
     </div>
   </div>
+  <div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 800px;">
+  <div style="padding: 4px 8px; background: #e9e6e1; border-radius: 10px;">
+      <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
+        <div id="mobile-chime-meeting-id" style="display:none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
+        <div id="mobile-attendee-id" style="display:none" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
+        <div id="mobile-video-uplink-bandwidth" style="display : none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
+        <div id="mobile-video-downlink-bandwidth" style="display : none" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;">
+        </div>
+      </div>
+      <div class="d-flex flex-wrap justify-content-center align-items-center gap-1" style="padding: 4px;">
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle microphone">
+          <button id="button-microphone" type="button" class="btn btn-sm btn-success" title="Toggle microphone">
+            <%= require('../../node_modules/open-iconic/svg/microphone.svg') %>
+          </button>
+          <button id="button-microphone-drop" type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                  aria-expanded="false" title="Select microphone"><span class="visually-hidden">Toggle Dropdown</span></button>
+          <div id="dropdown-menu-microphone" class="dropdown-menu dropdown-menu-end"
+               aria-labelledby="button-microphone-drop" x-placement="bottom-start"
+               style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <a class="dropdown-item" href="#">Default microphone</a>
+          </div>
+        </div>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle camera">
+          <button id="button-camera" type="button" class="btn btn-sm btn-success" title="Toggle camera">
+            <%= require('../../node_modules/open-iconic/svg/video.svg') %>
+          </button>
+          <button id="button-camera-drop" type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+                  aria-expanded="false" title="Select camera"><span class="visually-hidden">Toggle Dropdown</span></button>
+          <div id="dropdown-menu-camera" class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#">Default camera</a>
+          </div>
+        </div>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Apply filter">
+          <button id="button-video-filter" type="button" class="btn btn-sm btn-success" title="Apply filter">
+            <%= require('../../node_modules/open-iconic/svg/contrast.svg') %>
+          </button>
+          <button id="button-video-filter-drop" type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter"></button>
+          <div id="dropdown-menu-filter" class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="button-video-filter-drop" x-placement="bottom-start">
+            <a class="dropdown-item" href="#">No filter</a>
+          </div>
+        </div>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle content share">
+          <button id="button-content-share" type="button" class="btn btn-sm btn-success" title="Toggle content share">
+            <%= require('../../node_modules/open-iconic/svg/camera-slr.svg') %>
+          </button>
+          <button id="button-content-share-drop" type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  title="Select content to share"></button>
+          <div id="dropdown-menu-content-share" class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="button-content-share-drop" x-placement="bottom-start"
+                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <a id="dropdown-item-content-share-configuration" data-bs-toggle="modal"
+            data-bs-target="#content-share-configuration-modal" class="dropdown-item" href="#">Configure Content Sharing</a>
+            <a id="dropdown-item-content-share-pause-resume" style="display:none" class="dropdown-item" href="#">Pause Content Share</a>
+            <hr class="dropdown-divider">
+            <a id="dropdown-item-content-share-screen-capture" class="dropdown-item active content-share-source-option" href="#">Screen Capture</a>
+            <a id="dropdown-item-content-share-screen-test-video" class="dropdown-item content-share-source-option" href="#">Test Video</a>
+            <a id="dropdown-item-content-share-test-mono-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Mono
+              Audio Speech</a>
+            <a id="dropdown-item-content-share-test-stereo-audio-speech" class="dropdown-item content-share-source-option" href="#">Test Stereo
+              Audio Speech</a>
+            <a id="dropdown-item-content-share-test-stereo-audio-tone" class="dropdown-item content-share-source-option" href="#">Test Stereo
+              Tone (L-500Hz R-1000Hz)</a>
+            <label id="dropdown-item-content-share-file-item" class="dropdown-item content-share-source-option" for="content-share-item">Local file</label>
+            <input id="content-share-item" type="file">
+          </div>
+        </div>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Toggle speaker">
+          <button id="button-speaker" type="button" class="btn btn-success btn-sm" title="Toggle speaker">
+            <%= require('../../node_modules/open-iconic/svg/volume-low.svg') %>
+          </button>
+          <button id="button-speaker-drop" type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select speaker"></button>
+          <div id="dropdown-menu-speaker" class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="button-speaker-drop" x-placement="bottom-start"
+                style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <a class="dropdown-item" href="#">Default speaker</a>
+          </div>
+        </div>
+        <button id="button-live-transcription" type="button" class="btn btn-success btn-sm mx-1 mx-xl-2 my-2"
+                title="Toggle live transcription display" data-bs-toggle="button" aria-pressed="false" autocomplete="off"
+                style="display: none">
+          <%= require('../../node_modules/open-iconic/svg/code.svg') %>
+        </button>
+        <button id="button-video-stats" type="button" class="btn btn-success btn-sm mx-1 mx-xl-2 my-2"
+                title="Toggle video WebRTC stats display" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+          <%= require('../../node_modules/open-iconic/svg/signal.svg') %>
+        </button>
+        <div class="btn-group mx-1 mx-xl-2 my-2" role="group" aria-label="Select destination">
+          <div class="btn-group" role="group">
+            <button id="button-video-recording-drop" type="button" class="btn btn-success btn-sm dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Select filter">
+              <%= require('../../node_modules/open-iconic/svg/cloud.svg') %>
+            </button>
+            <div id="dropdown-menu-recording" class="dropdown-menu dropdown-menu-end"
+                 aria-labelledby="button-video-recording-drop" x-placement="bottom-start">
+              <button id="button-record-self" type="button" class="btn btn-success btn-sm mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Record my audio and video" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <svg class="svg">
+                  <circle id="rec-svg" cx="10" cy="10" r="8" fill="red"></circle>
+                </svg>
+                Capture Media to Device
+              </button>
+              <button id="button-record-cloud" type="button" class="btn btn-sm btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Capture audio and video in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <%= require('../../node_modules/open-iconic/svg/cloud-upload.svg') %>
+                Capture Media to S3
+              </button>
+              <button id="button-live-connector" type="button" class="btn btn-sm btn-success mx-1 mx-xl-2 my-2 dropdown-item"
+                      title="Broadcast the captured artifacts in the cloud" data-bs-toggle="button" aria-pressed="false" autocomplete="off">
+                <%= require('../../node_modules/open-iconic/svg/audio.svg') %>
+                Broadcast Media to IVS
+              </button>
+            </div>
+          </div>
+        </div>
+        <button id="button-promote-to-primary" type="button" class="btn btn-success btn-sm mx-1 mx-xl-2 my-2"
+                title="Promote to or demote from Primary meeting" data-bs-toggle="button" aria-pressed="false"
+                autocomplete="off">
+          <%= require('../../node_modules/open-iconic/svg/badge.svg') %>
+        </button>
+      </div>
+      <div class="col-4 col-lg-3 order-3 order-lg-3 text-end text-lg-right">
+        <button id="button-meeting-leave" type="button" class="btn btn-sm btn-outline-success mx-1 mx-xl-2 my-2 px-4"
+                title="Leave meeting">
+          <%= require('../../node_modules/open-iconic/svg/account-logout.svg') %>
+        </button>
+        <button id="button-meeting-end" type="button" class="btn btn-outline-danger btn-sm mx-1 mx-xl-2 my-2 px-4"
+                title="End meeting">
+          <%= require('../../node_modules/open-iconic/svg/power-standby.svg') %>
+        </button>
+      </div>
+    </div>
+</div>
 
   <div id='toast-container' aria-live="polite" aria-atomic="true">
   </div>
