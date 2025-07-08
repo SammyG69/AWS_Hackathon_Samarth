@@ -2421,6 +2421,31 @@ export class DemoMeetingApp
         this.dataMessageHandler(dataMessage);
       }
     );
+
+    this.audioVideo.realtimeSubscribeToReceiveDataMessage(
+      'chatbot-suggestion',
+      (dataMessage: DataMessage) => {
+        const data = JSON.parse(new TextDecoder('utf-8').decode(dataMessage.data));
+        const chatContainer = document.getElementById('chat-messages');
+        if (chatContainer) {
+          const suggestionWrapper = document.createElement('div');
+          suggestionWrapper.className = 'llm-suggestion-block';
+
+          const header = document.createElement('div');
+          header.className = 'llm-suggestion-header';
+          header.innerText = `💡 Suggestion [${data.label}]`;
+
+          const body = document.createElement('div');
+          body.innerHTML = data.suggestion;
+          body.className = 'llm-suggestion-body';
+
+          suggestionWrapper.appendChild(header);
+          suggestionWrapper.appendChild(body);
+          chatContainer.appendChild(suggestionWrapper);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      }
+    );
   }
 
   transcriptEventHandler = (transcriptEvent: TranscriptEvent): void => {
@@ -2755,6 +2780,15 @@ export class DemoMeetingApp
                     suggestionWrapper.appendChild(body);
                     chatContainer.appendChild(suggestionWrapper);
                     chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                    this.audioVideo.realtimeSendDataMessage(
+                      'chatbot-suggestion',
+                      JSON.stringify({
+                        suggestion: html,
+                        label: label.toUpperCase(),
+                      }),
+                      DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+                    );
                   }
                 });
             }
