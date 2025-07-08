@@ -2715,7 +2715,7 @@ export class DemoMeetingApp
           .then(({ label, score }) => {
             const important = ['PROPOSAL', 'QUESTION', 'CONFUSION'];
             console.log(`THE SCORE IS: ${score}. The classification is ${label.toUpperCase()}`);
-            if (important.includes(label.toUpperCase()) && score > 0.45) {
+            if (important.includes(label.toUpperCase()) && score > 0.3) {
               console.log(`🟡 Suggestion Point Detected: [${label}] "${labelWindowedTranscript}"`);
 
               const ninetySecondsAgo = Date.now() - 90_000;
