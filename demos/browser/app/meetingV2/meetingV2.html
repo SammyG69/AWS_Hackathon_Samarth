@@ -6,8 +6,7 @@
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
   <title>Meeting Demo</title>
 </head>
-<body style ="background: linear-gradient(to right, #033faf, #021958)"></body>
-
+<body style ="background: linear-gradient(120deg, #f0ece6 10%, #d4cdc4 40%, #c2bbb1 90%);">
 <div id="flow-fatal" class="flow">
   <div style="vertical-align: middle; text-align: left; width: 40%; margin: 10em 30% 10em 30%;">
     <h1>Fatal error</h1>
@@ -744,12 +743,8 @@
   </div>
   <audio id="meeting-audio" style="display:none"></audio>
   <div id="meeting-container" class="container-fluid h-100" style="display:flex; flex-flow:column">
-    <div class="row mb-3 mb-lg-0" style="flex: unset;">
+    <div class="row mb-3 mb-lg-0" style="flex: unset; background: #bcd3ea; border: solid 0.5px #000000; background: linear-gradient(to right, #a6a5a3, #7b7a77)">
       <div class="col-12 col-lg-3 order-1 order-lg-1 text-center text-lg-left">
-        <div id="logo-on-bar" class="navbar-brand d-flex align-items-center">
-  <img src="/logo-conversa.png" alt="Logo" style="height: 32px; margin-right: 8px;">
-  <span style="font-size: 20px; font-weight: 600; color: white;">CONVERSA</span>
-</div>
         <div id="mobile-chime-meeting-id" style="display:none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
         <div id="mobile-attendee-id" style="display:none" class="text-muted d-block d-sm-none mb-2" style="font-size:0.65rem;"></div>
         <div id="mobile-video-uplink-bandwidth" style="display : none" class="text-muted d-block d-sm-none" style="font-size:0.65rem;"></div>
@@ -884,23 +879,33 @@
     </div>
     <div id="roster-tile-container" class="row flex-sm-grow-1 overflow-hidden h-100" style="flex: unset; ">
       <div id="roster-message-container" class="d-flex flex-column col-12 col-sm-6 col-md-5 col-lg-4 h-100">
-        <div id="chatbot-panel" class ="flow-meeting" style="
+        <div id="chatbot-panel" class="flow-meeting" style="
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background: #fff;
-  border-left: 1px solid #ccc;
-  border-radius: 0;
+  background: linear-gradient(123deg, #f0ece6, #ffffff);
+  border-radius: 30px;
+  border: 2px solid #000000;
   font-family: 'Segoe UI', sans-serif;
   z-index: 999;
+  margin-top: 0;
+  padding: 0;
+  box-sizing: border-box;
 ">
-  <div style="padding: 10px; border-bottom: 1px solid #ddd; background: linear-gradient(to right, #4a8817, #1cc427);">
-  <strong style="color: #fff;">Meeting Assistant 🤖</strong>
+  <div style="
+  width: 100%;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  background: linear-gradient(to right, #0a4f6d, #187e90);
+">
+  <strong style="color: #fff; font: caption;">Meeting Assistant 🤖</strong>
 </div>
 
   <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto; font-size: 14px;"></div>
-  <div style="padding: 10px; border-top: 1px solid #ddd;">
+  <div style="padding: 10px; border-top: 1px solid #ddd; display: none;">
     <input id="chatbot-input" type="text" placeholder="Type a message..." style="
       width: 100%;
       padding: 6px;
@@ -970,7 +975,7 @@
         <div id="tile-area" class="v-grid"></div>
         <div id="transcript-container" class="transcript-container" style="display:none"></div>
       </div>
-      <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none"></video>
+      <video id="content-share-video" playsinline crossOrigin="anonymous" style="display:none; position:static"></video>
     </div>
   </div>
 
