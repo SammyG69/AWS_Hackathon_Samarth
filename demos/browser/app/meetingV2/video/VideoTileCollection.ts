@@ -13,7 +13,8 @@ import {
 
 import RemoteVideoManager from './RemoteVideoManager';
 import PaginationManager from './PaginationManager';
-import { DemoVideoTile } from './VideoTile'; DemoVideoTile; // Make sure this file is included in webpack
+import { DemoVideoTile } from './VideoTile';
+DemoVideoTile; // Make sure this file is included in webpack
 
 // We use the same config options for multiple settings when configuring
 // video tiles, regardless of what they map to internally
@@ -34,13 +35,15 @@ const ConfigLevelToTargetDisplaySize: { [Key in ConfigLevel]: TargetDisplaySize 
 };
 
 type DegrationPreferenceString = 'balanced' | 'maintainResolution' | 'maintainFramerate';
- 
-const StringToVideoQualityAdaptationPreference: { [Key in DegrationPreferenceString]: VideoQualityAdaptationPreference } = {
-    balanced: VideoQualityAdaptationPreference.Balanced,
-    maintainResolution: VideoQualityAdaptationPreference.MaintainResolution,
-    maintainFramerate: VideoQualityAdaptationPreference.MaintainFramerate,
-  };
- 
+
+const StringToVideoQualityAdaptationPreference: {
+  [Key in DegrationPreferenceString]: VideoQualityAdaptationPreference;
+} = {
+  balanced: VideoQualityAdaptationPreference.Balanced,
+  maintainResolution: VideoQualityAdaptationPreference.MaintainResolution,
+  maintainFramerate: VideoQualityAdaptationPreference.MaintainFramerate,
+};
+
 const VideoUpstreamMetricsKeyStats: { [key: string]: string } = {
   videoUpstreamFrameHeight: 'Frame Height',
   videoUpstreamFrameWidth: 'Frame Width',
@@ -115,11 +118,11 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
   bandwidthConstrainedTiles = new Set<number>();
 
-  _activeSpeakerAttendeeId = "";
+  _activeSpeakerAttendeeId = '';
   public set activeSpeakerAttendeeId(id: string) {
-    this.logger.info(`setting act spk to ${id}`)
+    this.logger.info(`setting act spk to ${id}`);
     this._activeSpeakerAttendeeId = id;
-    this.layoutFeaturedTile();
+    // this.layoutFeaturedTile();
   }
 
   statsReportCount: number = 0;
@@ -127,11 +130,13 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
   pagination: PaginationManager<string>;
 
-  constructor(private videoTileController: VideoTileControllerFacade,
+  constructor(
+    private videoTileController: VideoTileControllerFacade,
     private logger: Logger,
     private remoteVideoManager: RemoteVideoManager,
     private pageSize: number,
-    private localAttendeeId: string) {
+    private localAttendeeId: string
+  ) {
     this.setupVideoTiles();
 
     if (!this.remoteVideoManager.supportsRemoteVideoPreferences()) {
@@ -142,18 +147,25 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
 
     this.pagination = new PaginationManager<string>(this.pageSize);
-    document.getElementById('video-paginate-left').addEventListener('click', (event: Event) => { this.paginateLeft() });
-    document.getElementById('video-paginate-right').addEventListener('click', (event: Event) => { this.paginateRight() });
+    document.getElementById('video-paginate-left').addEventListener('click', (event: Event) => {
+      this.paginateLeft();
+    });
+    document.getElementById('video-paginate-right').addEventListener('click', (event: Event) => {
+      this.paginateRight();
+    });
     this.updatePaginatedVisibleTiles();
   }
 
   remoteVideoSourcesDidChange(videoSources: VideoSource[]): void {
     // Add these sources to the pagination list
     for (const source of videoSources) {
-        this.pagination.add(source.attendee.attendeeId);
+      this.pagination.add(source.attendee.attendeeId);
     }
     this.pagination.removeIf((value: string) => {
-      return !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value) && !this.isLocalAttendee(value);
+      return (
+        !videoSources.some((source: VideoSource) => source.attendee.attendeeId === value) &&
+        !this.isLocalAttendee(value)
+      );
     });
 
     // Update the preference manager explicitly as it needs to add default preferences
@@ -171,30 +183,65 @@ export default class VideoTileCollection implements AudioVideoObserver {
       : this.tileOrganizer.acquireTileIndex(tileState.tileId);
     const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
 
-    if (!tileState.localTile) { // Pausing local tile doesn't make sense
-      demoVideoTile.pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
+    if (!tileState.localTile) {
+      // Pausing local tile doesn't make sense
+      demoVideoTile.pauseButtonElement.removeEventListener(
+        'click',
+        this.tileIndexToPauseEventListener[tileIndex]
+      );
       this.tileIndexToPauseEventListener[tileIndex] = this.createPauseResumeListener(tileState);
-      demoVideoTile.pauseButtonElement.addEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
+      demoVideoTile.pauseButtonElement.addEventListener(
+        'click',
+        this.tileIndexToPauseEventListener[tileIndex]
+      );
     }
 
-    if (this.remoteVideoManager.supportsRemoteVideoPreferences() && !tileState.localTile) { // No current config possible on local tile
+    if (this.remoteVideoManager.supportsRemoteVideoPreferences() && !tileState.localTile) {
+      // No current config possible on local tile
       this.logger.info('adding config listeners for tileIndex ' + tileIndex);
-      demoVideoTile.targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
-      this.tileIndexToTargetResolutionEventListener[tileIndex] = this.createTargetResolutionListener(tileState);
-      demoVideoTile.targetResolutionRadioElement.addEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
+      demoVideoTile.targetResolutionRadioElement.removeEventListener(
+        'click',
+        this.tileIndexToTargetResolutionEventListener[tileIndex]
+      );
+      this.tileIndexToTargetResolutionEventListener[
+        tileIndex
+      ] = this.createTargetResolutionListener(tileState);
+      demoVideoTile.targetResolutionRadioElement.addEventListener(
+        'click',
+        this.tileIndexToTargetResolutionEventListener[tileIndex]
+      );
 
-      demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
-      this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(tileState);
-      demoVideoTile.videoPriorityRadioElement.addEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
+      demoVideoTile.videoPriorityRadioElement.removeEventListener(
+        'click',
+        this.tileIndexToPriorityEventListener[tileIndex]
+      );
+      this.tileIndexToPriorityEventListener[tileIndex] = this.createVideoPriorityListener(
+        tileState
+      );
+      demoVideoTile.videoPriorityRadioElement.addEventListener(
+        'click',
+        this.tileIndexToPriorityEventListener[tileIndex]
+      );
 
-      demoVideoTile.videoDegradationPreferenceRadioElement.removeEventListener('click', this.tileIndexToDegradationPreferenceEventListener[tileIndex]);
-      this.tileIndexToDegradationPreferenceEventListener[tileIndex] = this.createVideoDegradationPreferenceListener(tileState);
-      demoVideoTile.videoDegradationPreferenceRadioElement.addEventListener('click', this.tileIndexToDegradationPreferenceEventListener[tileIndex]);
+      demoVideoTile.videoDegradationPreferenceRadioElement.removeEventListener(
+        'click',
+        this.tileIndexToDegradationPreferenceEventListener[tileIndex]
+      );
+      this.tileIndexToDegradationPreferenceEventListener[
+        tileIndex
+      ] = this.createVideoDegradationPreferenceListener(tileState);
+      demoVideoTile.videoDegradationPreferenceRadioElement.addEventListener(
+        'click',
+        this.tileIndexToDegradationPreferenceEventListener[tileIndex]
+      );
     }
 
     const videoElement = demoVideoTile.videoElement;
     this.logger.info(`binding video tile ${tileState.tileId} to ${videoElement.id}`);
-    this.videoTileController.bindVideoElement(tileState.tileId, this.tileIndexToDemoVideoTile.get(tileIndex).videoElement);
+    this.videoTileController.bindVideoElement(
+      tileState.tileId,
+      this.tileIndexToDemoVideoTile.get(tileIndex).videoElement
+    );
 
     this.tileIndexToTileId[tileIndex] = tileState.tileId;
     this.tileIdToTileIndex[tileState.tileId] = tileIndex;
@@ -212,36 +259,48 @@ export default class VideoTileCollection implements AudioVideoObserver {
     // We need to add local video or content to pagination from tile updates
     const shouldUpdatePagination = this.isLocalAttendee(tileState.boundAttendeeId);
     if (tileState.boundVideoStream) {
-        if (shouldUpdatePagination) {
-            this.pagination.add(tileState.boundAttendeeId);
-        }
+      if (shouldUpdatePagination) {
+        this.pagination.add(tileState.boundAttendeeId);
+      }
     } else {
-        // Hide non-active tiles that aren't just paused
-        demoVideoTile.hide();
-        if (shouldUpdatePagination) {
-            this.pagination.remove(tileState.boundAttendeeId);
-        }
+      // Hide non-active tiles that aren't just paused
+      demoVideoTile.hide();
+      if (shouldUpdatePagination) {
+        this.pagination.remove(tileState.boundAttendeeId);
+      }
     }
     this.updatePaginatedVisibleTiles();
     this.updateLayout();
-    this.layoutFeaturedTile();
+    // this.layoutFeaturedTile();
   }
 
   videoTileWasRemoved(tileId: number): void {
     const tileIndex = this.tileOrganizer.releaseTileIndex(tileId);
     this.logger.info(`video tileId removed: ${tileId} from tile-${tileIndex}`);
     const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
-    demoVideoTile.pauseButtonElement.removeEventListener('click', this.tileIndexToPauseEventListener[tileIndex]);
+    demoVideoTile.pauseButtonElement.removeEventListener(
+      'click',
+      this.tileIndexToPauseEventListener[tileIndex]
+    );
     if (true) {
-      demoVideoTile.targetResolutionRadioElement.removeEventListener('click', this.tileIndexToTargetResolutionEventListener[tileIndex]);
-      demoVideoTile.videoPriorityRadioElement.removeEventListener('click', this.tileIndexToPriorityEventListener[tileIndex]);
-      demoVideoTile.videoDegradationPreferenceRadioElement.removeEventListener('click', this.tileIndexToDegradationPreferenceEventListener[tileIndex]);
+      demoVideoTile.targetResolutionRadioElement.removeEventListener(
+        'click',
+        this.tileIndexToTargetResolutionEventListener[tileIndex]
+      );
+      demoVideoTile.videoPriorityRadioElement.removeEventListener(
+        'click',
+        this.tileIndexToPriorityEventListener[tileIndex]
+      );
+      demoVideoTile.videoDegradationPreferenceRadioElement.removeEventListener(
+        'click',
+        this.tileIndexToDegradationPreferenceEventListener[tileIndex]
+      );
     }
     demoVideoTile.hide();
     // Clear values
-    demoVideoTile.attendeeId = "";
-    demoVideoTile.nameplate = "";
-    demoVideoTile.pauseState = "";
+    demoVideoTile.attendeeId = '';
+    demoVideoTile.nameplate = '';
+    demoVideoTile.pauseState = '';
     this.updateLayout();
   }
 
@@ -252,7 +311,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
   }
 
   showVideoWebRTCStats(videoMetricReport: { [id: string]: { [id: string]: {} } }): void {
-    this.logger.info(`showing stats ${JSON.stringify(videoMetricReport)}`)
+    this.logger.info(`showing stats ${JSON.stringify(videoMetricReport)}`);
     const videoTiles = this.videoTileController.getAllVideoTiles();
     if (videoTiles.length === 0) {
       return;
@@ -266,10 +325,18 @@ export default class VideoTileCollection implements AudioVideoObserver {
       const tileIndex = this.tileIdToTileIndex[tileId];
       const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
       if (tileState.localTile) {
-        this.logger.info(`showing stats ${JSON.stringify(videoMetricReport)}`)
-        demoVideoTile.showVideoStats(VideoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream');
+        this.logger.info(`showing stats ${JSON.stringify(videoMetricReport)}`);
+        demoVideoTile.showVideoStats(
+          VideoUpstreamMetricsKeyStats,
+          videoMetricReport[tileState.boundAttendeeId],
+          'Upstream'
+        );
       } else {
-        demoVideoTile.showVideoStats(VideoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Downstream');
+        demoVideoTile.showVideoStats(
+          VideoDownstreamMetricsKeyStats,
+          videoMetricReport[tileState.boundAttendeeId],
+          'Downstream'
+        );
       }
     }
   }
@@ -298,10 +365,20 @@ export default class VideoTileCollection implements AudioVideoObserver {
 
       if (tileState.localTile || tileState.isContent) {
         uplinkCount++;
-        demoVideoTile.collectVideoStats(VideoUpstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Upstream', uplinkStats);
+        demoVideoTile.collectVideoStats(
+          VideoUpstreamMetricsKeyStats,
+          videoMetricReport[tileState.boundAttendeeId],
+          'Upstream',
+          uplinkStats
+        );
       } else {
         downlinkCount++;
-        demoVideoTile.collectVideoStats(VideoDownstreamMetricsKeyStats, videoMetricReport[tileState.boundAttendeeId], 'Downstream', downlinkStats);
+        demoVideoTile.collectVideoStats(
+          VideoDownstreamMetricsKeyStats,
+          videoMetricReport[tileState.boundAttendeeId],
+          'Downstream',
+          downlinkStats
+        );
       }
     }
 
@@ -316,14 +393,14 @@ export default class VideoTileCollection implements AudioVideoObserver {
     this.statsReportCount++;
     if (this.statsReportCount % this.statsReportInterval === 0) {
       if (uplinkCount > 0) {
-        let stats: string = "";
+        let stats: string = '';
         for (let [metricName, value] of uplinkStats) {
           stats += ` | ${metricName}: ${value}`;
         }
         this.logger.info(`  RTCStats  uplink (${uplinkCount}): ${stats}`);
       }
       if (downlinkCount > 0) {
-        let stats: string = "";
+        let stats: string = '';
         for (let [metricName, value] of downlinkStats) {
           stats += ` | ${metricName}: ${value}`;
         }
@@ -335,7 +412,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
   private setupVideoTiles(): void {
     const tileArea = document.getElementById(`tile-area`);
     for (let i = 0; i <= TileOrganizer.MaxTiles; i++) {
-      const tile = document.createElement('video-tile') as DemoVideoTile
+      const tile = document.createElement('video-tile') as DemoVideoTile;
       // `DemoVideoTile` requires being added to DOM before calling any functions
       tileArea.appendChild(tile);
 
@@ -378,9 +455,12 @@ export default class VideoTileCollection implements AudioVideoObserver {
     for (const tile of this.videoTileController.getAllVideoTiles()) {
       const state = tile.state();
       if (state.isContent) {
-        if (state.boundAttendeeId.startsWith(this.localAttendeeId) && !this.pagination.currentPage().includes(state.boundAttendeeId)) {
-            return null;
-         }
+        if (
+          state.boundAttendeeId.startsWith(this.localAttendeeId) &&
+          !this.pagination.currentPage().includes(state.boundAttendeeId)
+        ) {
+          return null;
+        }
         return state.tileId;
       }
     }
@@ -395,25 +475,22 @@ export default class VideoTileCollection implements AudioVideoObserver {
     return this.tileIdForAttendeeId(this._activeSpeakerAttendeeId);
   }
 
-  private layoutFeaturedTile(): void {
-    const tilesIndices = this.visibleTileIndices();
-    const localTileId = this.localTileId();
-    const activeTile = this.activeTileId();
-
-    for (let i = 0; i < tilesIndices.length; i++) {
-      const tileIndex = tilesIndices[i];
-      const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
-      const tileId = this.tileIndexToTileId[tileIndex];
-
-      if (tileId === activeTile && tileId !== localTileId) {
-        demoVideoTile.featured = true;
-      } else {
-        demoVideoTile.featured = false;
-      }
-    }
-
-    this.updateLayout();
-  }
+  // private layoutFeaturedTile(): void {
+  // const tilesIndices = this.visibleTileIndices();
+  // const localTileId = this.localTileId();
+  // const activeTile = this.activeTileId();
+  // for (let i = 0; i < tilesIndices.length; i++) {
+  //   const tileIndex = tilesIndices[i];
+  //   const demoVideoTile = this.tileIndexToDemoVideoTile.get(tileIndex);
+  //   const tileId = this.tileIndexToTileId[tileIndex];
+  //   if (tileId === activeTile && tileId !== localTileId) {
+  //     demoVideoTile.featured = true;
+  //   } else {
+  //     demoVideoTile.featured = false;
+  //   }
+  // }
+  // this.updateLayout();
+  // }
 
   private updateLayout(): void {
     this.tileArea.className = `v-grid size-${this.pagination.currentPage().length}`;
@@ -427,18 +504,17 @@ export default class VideoTileCollection implements AudioVideoObserver {
     }
   }
 
-
   private localTileId(): number | null {
     return this.videoTileController.hasStartedLocalVideoTile()
       ? this.videoTileController.getLocalVideoTile().state().tileId
       : null;
   }
 
-  private visibleTileIndices(): number[] {
-    const tileKeys = Object.keys(this.tileOrganizer.tiles);
-    const tiles = tileKeys.map(tileId => parseInt(tileId));
-    return tiles;
-  }
+  // private visibleTileIndices(): number[] {
+  //   const tileKeys = Object.keys(this.tileOrganizer.tiles);
+  //   const tiles = tileKeys.map(tileId => parseInt(tileId));
+  //   return tiles;
+  // }
 
   private paginateLeft() {
     this.pagination.previousPage();
@@ -453,23 +529,29 @@ export default class VideoTileCollection implements AudioVideoObserver {
   private updatePaginatedVisibleTiles() {
     // Refresh visible attendees incase ones have been added
     let attendeesToShow = this.pagination.currentPage();
-    this.logger.info(`Showing current page ${JSON.stringify(attendeesToShow)}`)
+    this.logger.info(`Showing current page ${JSON.stringify(attendeesToShow)}`);
     this.remoteVideoManager.visibleAttendees = attendeesToShow;
 
     // We need to manually control visibility of paused tiles anyways so we just do
     // everything here, even though the preference manager adding/removing will
     // result in tile callbacks as well.
     for (let videoTile of this.tileIndexToDemoVideoTile.values()) {
-        if (attendeesToShow.includes(videoTile.attendeeId)) {
-            videoTile.show(false);
-        } else {
-            videoTile.hide();
-        }
+      if (attendeesToShow.includes(videoTile.attendeeId)) {
+        videoTile.show(false);
+      } else {
+        videoTile.hide();
+      }
     }
 
-    const display = (should: boolean): string => { return should ? 'block' : 'none' };
-    document.getElementById('video-paginate-left').style.display = display(this.pagination.hasPreviousPage());
-    document.getElementById('video-paginate-right').style.display = display(this.pagination.hasNextPage());
+    const display = (should: boolean): string => {
+      return should ? 'block' : 'none';
+    };
+    document.getElementById('video-paginate-left').style.display = display(
+      this.pagination.hasPreviousPage()
+    );
+    document.getElementById('video-paginate-right').style.display = display(
+      this.pagination.hasNextPage()
+    );
   }
 
   private createTargetResolutionListener(tileState: VideoTileState): (event: Event) => void {
@@ -483,7 +565,7 @@ export default class VideoTileCollection implements AudioVideoObserver {
       this.logger.info(`target resolution changed for: ${attendeeId} to ${value}`);
       const targetDisplaySize = ConfigLevelToTargetDisplaySize[value as ConfigLevel];
       this.remoteVideoManager.setAttendeeTargetDisplaySize(attendeeId, targetDisplaySize);
-    }
+    };
   }
 
   private createVideoPriorityListener(tileState: VideoTileState): (event: Event) => void {
@@ -497,10 +579,12 @@ export default class VideoTileCollection implements AudioVideoObserver {
       this.logger.info(`priority changed for: ${attendeeId} to ${value}`);
       const priority = ConfigLevelToVideoPriority[value as ConfigLevel];
       this.remoteVideoManager.setAttendeePriority(attendeeId, priority);
-    }
+    };
   }
 
-  private createVideoDegradationPreferenceListener(tileState: VideoTileState): (event: Event) => void {
+  private createVideoDegradationPreferenceListener(
+    tileState: VideoTileState
+  ): (event: Event) => void {
     return (event: Event): void => {
       if (!(event.target instanceof HTMLInputElement)) {
         // Ignore the Label event which will have a stale value
@@ -508,10 +592,11 @@ export default class VideoTileCollection implements AudioVideoObserver {
       }
       const attendeeId = tileState.boundAttendeeId;
       const value = (event.target as HTMLInputElement).value;
-      const preference = StringToVideoQualityAdaptationPreference[value as DegrationPreferenceString];
+      const preference =
+        StringToVideoQualityAdaptationPreference[value as DegrationPreferenceString];
       this.logger.info(`degradation preference changed for: ${attendeeId} to ${preference}`);
       this.remoteVideoManager.setAttendeeDegradationPreference(attendeeId, preference);
-    }
+    };
   }
 
   private createPauseResumeListener(tileState: VideoTileState): (event: Event) => void {
@@ -523,6 +608,6 @@ export default class VideoTileCollection implements AudioVideoObserver {
         this.videoTileController.unpauseVideoTile(tileState.tileId);
         (event.target as HTMLButtonElement).innerText = 'Pause';
       }
-    }
+    };
   }
 }

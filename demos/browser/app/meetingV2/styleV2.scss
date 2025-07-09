@@ -401,8 +401,8 @@ body {
   background-color: #f5f5f5;
 }
 .btn-sm svg {
-  width: 13px;
-  height: 13px;
+  width: 8px;
+  height: 8px;
 }
 
 svg {
@@ -494,6 +494,7 @@ svg {
   }
 
   #roster-tile-container {
+    padding: 20px;
     height: auto !important;
   }
 
@@ -502,6 +503,7 @@ svg {
   }
 
   #tile-transcript-container {
+    padding: 20px;
     height: auto !important;
   }
 
@@ -876,6 +878,13 @@ a.markdown:active {
   display: none;
   font-size: 18px;
   overflow: hidden;
+  border: 3px solid rgb(16, 15, 15);
+  border-radius: 15px;
+  transition: border 0.2s ease;
+
+  &:hover {
+    border-color: rgb(21, 212, 21);
+  }
 }
 
 .video-tile.active {
@@ -883,7 +892,11 @@ a.markdown:active {
 }
 
 .video-tile.featured {
-  grid-area: ft;
+  grid-area: auto;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 .video-tile.content {
@@ -960,6 +973,7 @@ a.markdown:active {
 
 .video-tile.active:hover > .video-tile-attendee-id {
   display: block;
+  border: 1px solid rgb(24, 241, 16);
 }
 
 .video-tile-pause-state {
