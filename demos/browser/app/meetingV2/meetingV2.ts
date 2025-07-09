@@ -2739,7 +2739,6 @@ export class DemoMeetingApp
           .then(res => res.json())
           .then(({ label, score }) => {
             const important = ['PROPOSAL', 'QUESTION', 'CONFUSION'];
-            console.log(`THE SCORE IS: ${score}. The classification is ${label.toUpperCase()}`);
             if (important.includes(label.toUpperCase()) && score > 0.3) {
               console.log(`🟡 Suggestion Point Detected: [${label}] "${labelWindowedTranscript}"`);
 
@@ -2760,7 +2759,6 @@ export class DemoMeetingApp
               })
                 .then(res => res.json())
                 .then(async response => {
-                  console.log('LLM Response:', response);
                   const { suggestions } = response;
                   const chatContainer = document.getElementById('chat-messages');
                   const html = await marked.parse(suggestions);
