@@ -2755,7 +2755,7 @@ export class DemoMeetingApp
                 body: JSON.stringify({
                   text: windowedTranscript.trim(),
                   label: label.toUpperCase(),
-                  labelTranscript: classifyBuffer,
+                  labelTranscript: labelWindowedTranscript.trim(),
                 }),
               })
                 .then(res => res.json())
