@@ -2739,7 +2739,7 @@ export class DemoMeetingApp
           .then(res => res.json())
           .then(({ label, score }) => {
             const important = ['PROPOSAL', 'QUESTION', 'CONFUSION'];
-            if (important.includes(label.toUpperCase()) && score > 0.3) {
+            if (important.includes(label.toUpperCase()) && score > 0.36) {
               console.log(`🟡 Suggestion Point Detected: [${label}] "${labelWindowedTranscript}"`);
 
               const ninetySecondsAgo = Date.now() - 90_000;
