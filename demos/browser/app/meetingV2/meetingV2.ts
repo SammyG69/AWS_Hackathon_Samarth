@@ -2689,117 +2689,109 @@ export class DemoMeetingApp
   };
 
   setupLiveTranscription = () => {
-    let transcriptBuffer: { text: string; timestamp: number }[] = [];
-    let classifyBuffer: { text: string; timestamp: number }[] = [];
-    let classifyFlush = Date.now();
+  let transcriptBuffer: { text: string; timestamp: number }[] = [];
+  let classifyBuffer: { text: string; timestamp: number }[] = [];
+  let classifyFlush = Date.now();
 
-    this.transcriptEventHandler = (event: any) => {
-      if (!event || !event.results || !Array.isArray(event.results)) {
-        console.warn('❗Transcript event missing expected "results" array:', event);
+  this.transcriptEventHandler = (event: any) => {
+    if (!event || !event.results || !Array.isArray(event.results)) {
+      console.warn('❗Transcript event missing expected "results" array:', event);
+      return;
+    }
+
+    for (const result of event.results) {
+      if (result.isPartial) continue;
+
+      for (const alt of result.alternatives) {
+        transcriptBuffer.push({
+          text: alt.transcript,
+          timestamp: Date.now(),
+        });
+        classifyBuffer.push({
+          text: alt.transcript,
+          timestamp: Date.now(),
+        });
+      }
+    }
+
+    const now = Date.now();
+    if (now - classifyFlush > 6000 && transcriptBuffer.length > 0 && classifyBuffer.length > 0) {
+      const tenSecondsAgo = now - 10_000;
+
+      const labelWindowedTranscript = classifyBuffer
+        .filter(item => item.timestamp >= tenSecondsAgo)
+        .map(item => item.text)
+        .join(' ')
+        .replace(/\b(uh+|mm+|um+|uhm+)\b/gi, '')
+        .trim();
+
+      if (!labelWindowedTranscript || labelWindowedTranscript.length < 5) {
+        console.warn('🛑 Skipping classification: not enough content');
+        classifyBuffer = [];
+        classifyFlush = now;
         return;
       }
 
-      for (const result of event.results) {
-        if (result.isPartial) continue;
+      const ninetySecondsAgo = now - 90_000;
+      const windowedTranscript = transcriptBuffer
+        .filter(item => item.timestamp >= ninetySecondsAgo)
+        .map(item => item.text)
+        .join(' ');
 
-        for (const alt of result.alternatives) {
-          transcriptBuffer.push({
-            text: alt.transcript,
-            timestamp: Date.now(),
-          });
-          classifyBuffer.push({
-            text: alt.transcript,
-            timestamp: Date.now(),
-          });
-        }
-      }
-      const now = Date.now();
-      if (now - classifyFlush > 6000 && transcriptBuffer.length > 0 && classifyBuffer.length > 0) {
-        const tenSecondsAgo = now - 10_000;
+      // 🟡 ONE fetch to your deployed Lambda
+      fetch('https://<your-lambda-url>.amazonaws.com/default/GroqLambdaFunction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: windowedTranscript.trim(),
+          labelTranscript: labelWindowedTranscript.trim(),
+        }),
+      })
+        .then(res => res.json())
+        .then(async ({ suggestions, label }) => {
+          if (!suggestions || suggestions.length < 3) return;
 
-        const labelWindowedTranscript = classifyBuffer
-          .filter(item => item.timestamp >= tenSecondsAgo)
-          .map(item => item.text)
-          .join(' ')
-          .replace(/\b(uh+|mm+|um+|uhm+)\b/gi, '')
-          .trim();
+          const chatContainer = document.getElementById('chat-messages');
+          const html = await marked.parse(suggestions);
 
-        if (!labelWindowedTranscript || labelWindowedTranscript.length < 5) {
-          console.warn('🛑 Skipping classification: not enough content');
-          classifyBuffer = [];
-          classifyFlush = now;
-          return;
-        }
+          if (chatContainer) {
+            const suggestionWrapper = document.createElement('div');
+            suggestionWrapper.className = 'llm-suggestion-block';
 
-        fetch('http://localhost:8000/classify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: labelWindowedTranscript.trim() }),
+            const header = document.createElement('div');
+            header.className = 'llm-suggestion-header';
+            header.innerText = `💡 Suggestion:`;
+
+            const body = document.createElement('div');
+            body.innerHTML = html;
+            body.className = 'llm-suggestion-body';
+
+            suggestionWrapper.appendChild(header);
+            suggestionWrapper.appendChild(body);
+            chatContainer.appendChild(suggestionWrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            this.audioVideo.realtimeSendDataMessage(
+              'chatbot-suggestion',
+              JSON.stringify({
+                suggestion: html,
+                label: label.toUpperCase(),
+              }),
+              DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
+            );
+          }
         })
-          .then(res => res.json())
-          .then(({ label, score }) => {
-            const important = ['PROPOSAL', 'QUESTION', 'CONFUSION'];
-            if (important.includes(label.toUpperCase()) && score > 0.36) {
-              console.log(`🟡 Suggestion Point Detected: [${label}] "${labelWindowedTranscript}"`);
+        .catch(err => console.error('🔻 Lambda call failed:', err));
 
-              const ninetySecondsAgo = Date.now() - 90_000;
-              const windowedTranscript = transcriptBuffer
-                .filter(item => item.timestamp >= ninetySecondsAgo)
-                .map(item => item.text)
-                .join(' ');
-
-              fetch('http://localhost:3001/transcript', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  text: windowedTranscript.trim(),
-                  label: label.toUpperCase(),
-                  labelTranscript: labelWindowedTranscript.trim(),
-                }),
-              })
-                .then(res => res.json())
-                .then(async response => {
-                  const { suggestions } = response;
-                  const chatContainer = document.getElementById('chat-messages');
-                  const html = await marked.parse(suggestions);
-                  if (chatContainer) {
-                    const suggestionWrapper = document.createElement('div');
-                    suggestionWrapper.className = 'llm-suggestion-block';
-
-                    const header = document.createElement('div');
-                    header.className = 'llm-suggestion-header';
-                    header.innerText = `💡 Suggestion:`;
-
-                    const body = document.createElement('div');
-                    body.innerHTML = html;
-                    body.className = 'llm-suggestion-body';
-
-                    suggestionWrapper.appendChild(header);
-                    suggestionWrapper.appendChild(body);
-                    chatContainer.appendChild(suggestionWrapper);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-
-                    this.audioVideo.realtimeSendDataMessage(
-                      'chatbot-suggestion',
-                      JSON.stringify({
-                        suggestion: html,
-                        label: label.toUpperCase(),
-                      }),
-                      DemoMeetingApp.DATA_MESSAGE_LIFETIME_MS
-                    );
-                  }
-                });
-            }
-          })
-          .catch(err => console.error('Zero-shot classification failed:', err));
-        classifyFlush = now;
-      }
-    };
-
-    this.audioVideo.transcriptionController?.subscribeToTranscriptEvent(
-      this.transcriptEventHandler
-    );
+      classifyFlush = now;
+    }
   };
+
+  this.audioVideo.transcriptionController?.subscribeToTranscriptEvent(
+    this.transcriptEventHandler
+  );
+};
+
 
   // eslint-disable-next-line
   async sendJoinRequest(
