@@ -2739,7 +2739,7 @@ export class DemoMeetingApp
           .join(' ');
 
         // 🟡 ONE fetch to your deployed Lambda
-        fetch('https://<your-lambda-url>.amazonaws.com/default/GroqLambdaFunction', {
+        fetch('https://qpek7j0ph1.execute-api.us-east-1.amazonaws.com/default/GroqLambda', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
