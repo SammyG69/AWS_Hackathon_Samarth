@@ -164,10 +164,6 @@ export class DemoMeetingApp {
   }
 
   async createLogStream(configuration: MeetingSessionConfiguration): Promise<void> {
-    const body = JSON.stringify({
-      meetingId: configuration.meetingId,
-      attendeeId: configuration.credentials.attendeeId,
-    });
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/join?title=${encodeURIComponent(
