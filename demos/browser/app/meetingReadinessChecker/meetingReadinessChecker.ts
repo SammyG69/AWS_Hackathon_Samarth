@@ -169,10 +169,14 @@ export class DemoMeetingApp {
       attendeeId: configuration.credentials.attendeeId,
     });
     try {
-      const response = await fetch(`${DemoMeetingApp.BASE_URL}create_log_stream`, {
-        method: 'POST',
-        body,
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/join?title=${encodeURIComponent(
+          this.meeting
+        )}&name=${encodeURIComponent(this.name)}&region=${encodeURIComponent(this.region)}`,
+        {
+          method: 'POST',
+        }
+      );
       if (response.status === 200) {
         console.log('Log stream created');
       }
@@ -183,7 +187,7 @@ export class DemoMeetingApp {
 
   getAudioInputDevice = (): string | MediaStream => {
     const dropdownList = document.getElementById('audio-input') as HTMLSelectElement;
-    if(dropdownList.value == 'No Audio') {
+    if (dropdownList.value == 'No Audio') {
       // An empty media stream destination without any source connected to it, so it doesn't generate any audio.
       // This is currently only used for testing audio connectivity as part of meeting readiness checker
       // Note: It's currently not possible to emulate 'No Audio' in Firefox, so we don't provide it
@@ -293,7 +297,7 @@ export class DemoMeetingApp {
 
   audioConnectivityTest = async (): Promise<CheckAudioConnectivityFeedback> => {
     this.createReadinessHtml('audioconnectivity-test', 'spinner-border');
-    const audioInputDevice: string | MediaStream = this.getAudioInputDevice()
+    const audioInputDevice: string | MediaStream = this.getAudioInputDevice();
     const audioConnectivityResp = await this.meetingReadinessChecker.checkAudioConnectivity(
       audioInputDevice
     );
@@ -498,10 +502,10 @@ export class DemoMeetingApp {
     const genericName = 'Microphone';
     const additionalDevices = ['None'];
 
-    if(!this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
+    if (!this.defaultBrowserBehaviour.hasFirefoxWebRTC()) {
       // We don't add this in Firefox because there is no known mechanism, using MediaStream or WebAudio APIs,
       // to *not* generate audio in Firefox. By default, everything generates silent audio packets in Firefox.
-      additionalDevices.push('No Audio')
+      additionalDevices.push('No Audio');
     }
 
     this.populateDeviceList(
